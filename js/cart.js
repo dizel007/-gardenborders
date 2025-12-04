@@ -66,24 +66,26 @@ function renderCartItems() {
         const cartItem = document.createElement('div');
         cartItem.className = 'cart-item';
         cartItem.dataset.id = item.id;
-        cartItem.innerHTML = `
-            <div class="cart-item-image">
-                <i class="${item.image}"></i>
-            </div>
-            <div class="cart-item-details">
-                <div class="cart-item-title">${item.name}</div>
-                <div class="cart-item-category">${getCategoryName(item.category)}</div>
-                <div class="cart-item-price">${item.price} ₽/шт</div>
-                <div class="cart-item-controls">
-                    <button class="quantity-btn" onclick="updateCartItemQuantity(${item.id}, -1)">-</button>
-                    <span class="quantity">${item.quantity}</span>
-                    <button class="quantity-btn" onclick="updateCartItemQuantity(${item.id}, 1)">+</button>
-                    <button class="remove-item" onclick="removeCartItem(${item.id})">
-                        <i class="fas fa-trash"></i> Удалить
-                    </button>
-                </div>
-            </div>
-        `;
+cartItem.innerHTML = `
+    <div class="cart-item-image">
+        ${item.image && item.image.includes('.jpg') || item.image.includes('.png') 
+            ? `<img src="images/products/${item.image}" alt="${item.name}">`
+            : `<i class="${item.image || 'fas fa-box'}"></i>`}
+    </div>
+    <div class="cart-item-details">
+        <div class="cart-item-title">${item.name}</div>
+        <div class="cart-item-category">${getCategoryName(item.category)}</div>
+        <div class="cart-item-price">${item.price} ₽/шт</div>
+        <div class="cart-item-controls">
+            <button class="quantity-btn" onclick="updateCartItemQuantity(${item.id}, -1)">-</button>
+            <span class="quantity">${item.quantity}</span>
+            <button class="quantity-btn" onclick="updateCartItemQuantity(${item.id}, 1)">+</button>
+            <button class="remove-item" onclick="removeCartItem(${item.id})">
+                <i class="fas fa-trash"></i> Удалить
+            </button>
+        </div>
+    </div>
+`;
         cartItemsContainer.appendChild(cartItem);
     });
     
@@ -261,6 +263,7 @@ function getCategoryName(category) {
     };
     return categories[category] || category;
 }
+
 
 // Экспортируем функции глобально
 window.renderCartItems = renderCartItems;
