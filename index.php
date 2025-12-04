@@ -83,11 +83,11 @@
                         </div>
                         <div class="hero-feature">
                             <i class="fas fa-palette"></i>
-                            <span>20+ цветов и текстур</span>
+                            <span> Собственное производство</span>
                         </div>
                         <div class="hero-feature">
                             <i class="fas fa-ruler-combined"></i>
-                            <span>Любые размеры под заказ</span>
+                            <span>Любые объемы под заказ</span>
                         </div>
                     </div>
                     <a href="#products" class="cta-button">
