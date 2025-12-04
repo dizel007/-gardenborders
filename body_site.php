@@ -243,75 +243,84 @@ $filteredProducts = $category === 'all' ? $products : array_filter($products, fu
             if (counter) counter.textContent = cartCount;
         }
 
-        function addToCart(productId, event) {
-            const product = productsData.find(p => p.id === productId);
-            if (!product) return;
-            
-            if (product.inStock === 0) {
-                showNotification('Товар отсутствует в наличии', 'error');
-                return;
-            }
-            
-            const button = event.target.closest('.add-to-cart');
-            if (button) {
-                const originalHTML = button.innerHTML;
-                const originalBackground = button.style.background;
-                button.style.transform = 'scale(0.95)';
-                button.innerHTML = '<i class="fas fa-check"></i> Добавлено!';
-                button.style.background = 'linear-gradient(135deg, #2e7d32, #4caf50)';
-                
-                setTimeout(() => button.style.transform = 'scale(1)', 200);
-                setTimeout(() => {
-                    button.innerHTML = originalHTML;
-                    button.style.background = originalBackground;
-                }, 1500);
-            }
-            
-            const existingItemIndex = AppState.cart.findIndex(item => item.id === productId);
-            
-            if (existingItemIndex > -1) {
-                if (AppState.cart[existingItemIndex].quantity < product.inStock) {
-                    AppState.cart[existingItemIndex].quantity += 1;
-                    showNotification(`Товар "${product.name}" добавлен в корзину (${AppState.cart[existingItemIndex].quantity} шт.)`, 'success');
-                } else {
-                    showNotification(`Нельзя добавить больше товара "${product.name}". В наличии только ${product.inStock} шт.`, 'error');
-                    return;
-                }
-            } else {
-                AppState.cart.push({
-                    id: product.id,
-                    name: product.name,
-                    price: product.price,
-                    image: product.images ? product.images[0] : 'default.jpg',
-                    category: product.category,
-                    quantity: 1
-                });
-                showNotification(`Товар "${product.name}" добавлен в корзину`, 'success');
-            }
-            
-            localStorage.setItem('cart', JSON.stringify(AppState.cart));
-            updateCartCounter();
-            
-            if (window.AppState) {
-                window.AppState.cart = AppState.cart;
-                window.AppState.cartCount = AppState.cart.reduce((total, item) => total + (item.quantity || 0), 0);
-                
-                const globalCounter = document.querySelector('.cart-count');
-                if (globalCounter) {
-                    globalCounter.textContent = window.AppState.cartCount;
-                }
-                
-                if (window.updateCartTotals) window.updateCartTotals();
-                if (window.updateCartUI) window.updateCartUI();
-                if (window.saveCartToStorage) window.saveCartToStorage();
-            }
-            
-            const cartIcon = document.querySelector('.cart-icon');
-            if (cartIcon) {
-                cartIcon.style.animation = 'pulse 0.5s ease';
-                setTimeout(() => cartIcon.style.animation = '', 500);
-            }
+// В body_site.php в секции <script> замените функцию addToCart:
+
+function addToCart(productId, event) {
+    const product = productsData.find(p => p.id === productId);
+    if (!product) return;
+    
+    if (product.inStock === 0) {
+        showNotification('Товар отсутствует в наличии', 'error');
+        return;
+    }
+    
+    // Анимация кнопки
+    const button = event.target.closest('.add-to-cart');
+    if (button) {
+        const originalHTML = button.innerHTML;
+        const originalBackground = button.style.background;
+        button.style.transform = 'scale(0.95)';
+        button.innerHTML = '<i class="fas fa-check"></i> Добавлено!';
+        button.style.background = 'linear-gradient(135deg, #2e7d32, #4caf50)';
+        
+        setTimeout(() => button.style.transform = 'scale(1)', 200);
+        setTimeout(() => {
+            button.innerHTML = originalHTML;
+            button.style.background = originalBackground;
+        }, 1500);
+    }
+    
+    // Получаем текущую корзину
+    let savedCart = JSON.parse(localStorage.getItem('cart')) || [];
+    
+    // Проверяем, есть ли уже такой товар
+    const existingItemIndex = savedCart.findIndex(item => item.id === productId);
+    
+    if (existingItemIndex > -1) {
+        // Проверяем наличие на складе
+        if (savedCart[existingItemIndex].quantity < product.inStock) {
+            savedCart[existingItemIndex].quantity += 1;
+            showNotification(`Товар "${product.name}" добавлен в корзину (${savedCart[existingItemIndex].quantity} шт.)`, 'success');
+        } else {
+            showNotification(`Нельзя добавить больше товара "${product.name}". В наличии только ${product.inStock} шт.`, 'error');
+            return;
         }
+    } else {
+        // Добавляем новый товар
+        savedCart.push({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.images ? product.images[0] : 'default.jpg',
+            category: product.category,
+            quantity: 1
+        });
+        showNotification(`Товар "${product.name}" добавлен в корзину`, 'success');
+    }
+    
+    // Сохраняем ОБНОВЛЕННУЮ корзину
+    localStorage.setItem('cart', JSON.stringify(savedCart));
+    
+    // Обновляем все состояния
+    if (window.cartState) {
+        window.cartState.cart = savedCart;
+    }
+    
+    if (window.AppState) {
+        window.AppState.cart = savedCart;
+        window.AppState.cartCount = savedCart.reduce((total, item) => total + (item.quantity || 0), 0);
+    }
+    
+    // Обновляем счетчик
+    updateCartCounter();
+    
+    // Эффект пульсации
+    const cartIcon = document.querySelector('.cart-icon');
+    if (cartIcon) {
+        cartIcon.style.animation = 'pulse 0.5s ease';
+        setTimeout(() => cartIcon.style.animation = '', 500);
+    }
+}
 
         function showNotification(message, type = 'success') {
             const existingNotifications = document.querySelectorAll('.notification.show');

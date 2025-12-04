@@ -1,6 +1,23 @@
-// Управление UI корзины
+// cart.js (полностью переписанный)
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Cart module loaded');
+    
+    // Если cartState еще не создан, создаем его
+    if (!window.cartState) {
+        window.cartState = {
+            cart: JSON.parse(localStorage.getItem('cart')) || [],
+            getCount: function() {
+                return this.cart.reduce((total, item) => total + (item.quantity || 0), 0);
+            },
+            getCart: function() {
+                return [...this.cart];
+            },
+            getTotal: function() {
+                return this.cart.reduce((total, item) => total + ((item.price || 0) * (item.quantity || 0)), 0);
+            }
+        };
+    }
+    
     renderCartItems();
     setupCartEvents();
     updateCartCounter();
@@ -9,8 +26,8 @@ document.addEventListener('DOMContentLoaded', function() {
 // Обновление счетчика корзины
 function updateCartCounter() {
     const cartCountElement = document.querySelector('.cart-count');
-    if (cartCountElement && window.AppState && window.AppState.cartCount !== undefined) {
-        cartCountElement.textContent = window.AppState.cartCount;
+    if (cartCountElement && window.cartState) {
+        cartCountElement.textContent = window.cartState.getCount();
     }
 }
 
@@ -19,33 +36,11 @@ function renderCartItems() {
     const cartItemsContainer = document.getElementById('cartItems');
     if (!cartItemsContainer) return;
     
-    // Убедимся что AppState инициализирован
-    if (!window.AppState) {
-        window.AppState = {
-            products: [],
-            cart: [],
-            cartCount: 0,
-            cartTotal: 0
-        };
-    }
-    
-    // Загружаем из localStorage если пусто
-    if (!window.AppState.cart || window.AppState.cart.length === 0) {
-        const savedCart = localStorage.getItem('cart');
-        if (savedCart) {
-            try {
-                window.AppState.cart = JSON.parse(savedCart);
-                if (window.updateCartTotals) window.updateCartTotals();
-                if (window.updateCartCounter) window.updateCartCounter(); // Добавлено
-            } catch (e) {
-                console.error('Ошибка загрузки корзины:', e);
-                window.AppState.cart = [];
-            }
-        }
-    }
+    // Получаем текущее состояние корзины
+    const cart = window.cartState ? window.cartState.getCart() : [];
     
     // Проверяем наличие товаров
-    if (!window.AppState.cart || window.AppState.cart.length === 0) {
+    if (!cart || cart.length === 0) {
         cartItemsContainer.innerHTML = `
             <div class="empty-cart">
                 <i class="fas fa-shopping-basket"></i>
@@ -62,125 +57,120 @@ function renderCartItems() {
     
     // Отображаем товары
     cartItemsContainer.innerHTML = '';
-    window.AppState.cart.forEach(item => {
+    cart.forEach(item => {
         const cartItem = document.createElement('div');
         cartItem.className = 'cart-item';
         cartItem.dataset.id = item.id;
-cartItem.innerHTML = `
-    <div class="cart-item-image">
-        ${item.image && item.image.includes('.jpg') || item.image.includes('.png') 
-            ? `<img src="images/products/${item.image}" alt="${item.name}">`
-            : `<i class="${item.image || 'fas fa-box'}"></i>`}
-    </div>
-    <div class="cart-item-details">
-        <div class="cart-item-title">${item.name}</div>
-        <div class="cart-item-category">${getCategoryName(item.category)}</div>
-        <div class="cart-item-price">${item.price} ₽/шт</div>
-        <div class="cart-item-controls">
-            <button class="quantity-btn" onclick="updateCartItemQuantity(${item.id}, -1)">-</button>
-            <span class="quantity">${item.quantity}</span>
-            <button class="quantity-btn" onclick="updateCartItemQuantity(${item.id}, 1)">+</button>
-            <button class="remove-item" onclick="removeCartItem(${item.id})">
-                <i class="fas fa-trash"></i> Удалить
-            </button>
-        </div>
-    </div>
-`;
+        
+        // Проверяем тип изображения
+        const imageElement = item.image && (item.image.includes('.jpg') || item.image.includes('.png') || item.image.includes('.jpeg'))
+            ? `<img src="images/products/${item.image}" alt="${item.name}" onerror="this.onerror=null; this.src='images/products/default.jpg'; this.nextElementSibling.style.display='flex';">`
+            : `<i class="${item.image || 'fas fa-box'}"></i>`;
+        
+        cartItem.innerHTML = `
+            <div class="cart-item-image">
+                ${imageElement}
+            </div>
+            <div class="cart-item-details">
+                <div class="cart-item-title">${item.name}</div>
+                <div class="cart-item-category">${getCategoryName(item.category)}</div>
+                <div class="cart-item-price">${item.price} ₽/шт</div>
+                <div class="cart-item-controls">
+                    <button class="quantity-btn" onclick="updateCartItemQuantity(${item.id}, -1)">-</button>
+                    <span class="quantity">${item.quantity}</span>
+                    <button class="quantity-btn" onclick="updateCartItemQuantity(${item.id}, 1)">+</button>
+                    <button class="remove-item" onclick="removeCartItem(${item.id})">
+                        <i class="fas fa-trash"></i> Удалить
+                    </button>
+                </div>
+            </div>
+        `;
         cartItemsContainer.appendChild(cartItem);
     });
     
     const totalPriceElement = document.querySelector('.total-price');
-    if (totalPriceElement && window.AppState) {
-        totalPriceElement.textContent = `${window.AppState.cartTotal || 0} ₽`;
+    if (totalPriceElement && window.cartState) {
+        totalPriceElement.textContent = `${window.cartState.getTotal()} ₽`;
     }
 }
 
 // Обновление количества товара
 function updateCartItemQuantity(productId, change) {
-    // Убедимся что AppState инициализирован
-    if (!window.AppState) {
-        window.AppState = {
-            products: [],
-            cart: [],
-            cartCount: 0,
-            cartTotal: 0
-        };
-    }
+    // Проверяем наличие товара в корзине
+    const cart = window.cartState ? window.cartState.getCart() : [];
+    const itemIndex = cart.findIndex(item => item.id === productId);
     
-    if (!window.AppState.cart) window.AppState.cart = [];
-    
-    const itemIndex = window.AppState.cart.findIndex(item => item.id === productId);
     if (itemIndex === -1) return;
     
-    const newQuantity = window.AppState.cart[itemIndex].quantity + change;
+    const currentItem = cart[itemIndex];
+    const newQuantity = currentItem.quantity + change;
     
     if (newQuantity < 1) {
         removeCartItem(productId);
         return;
     }
     
-    // Проверяем наличие
-    const product = window.productsData ? 
-        window.productsData.find(p => p.id === productId) : null;
+    // Обновляем локальное хранилище напрямую
+    const savedCart = JSON.parse(localStorage.getItem('cart')) || [];
+    const savedItemIndex = savedCart.findIndex(item => item.id === productId);
     
-    if (product && newQuantity > product.inStock) {
-        if (window.showNotification) {
-            window.showNotification(`Нельзя добавить больше товара. В наличии только ${product.inStock} шт.`, 'error');
-        }
-        return;
+    if (savedItemIndex > -1) {
+        savedCart[savedItemIndex].quantity = newQuantity;
+        localStorage.setItem('cart', JSON.stringify(savedCart));
     }
     
-    window.AppState.cart[itemIndex].quantity = newQuantity;
+    // Обновляем cartState
+    if (window.cartState && window.cartState.cart) {
+        const cartStateItemIndex = window.cartState.cart.findIndex(item => item.id === productId);
+        if (cartStateItemIndex > -1) {
+            window.cartState.cart[cartStateItemIndex].quantity = newQuantity;
+        }
+    }
     
-    // Обновляем состояние
-    if (window.updateCartTotals) window.updateCartTotals();
-    if (window.updateCartUI) window.updateCartUI();
-    if (window.updateCartCounter) window.updateCartCounter(); // Добавлено
-    
-    // Сохраняем и обновляем
-    if (window.saveCartToStorage) window.saveCartToStorage();
+    // Обновляем отображение
+    updateCartCounter();
     renderCartItems();
     
     if (window.showNotification) {
         const action = change > 0 ? 'увеличено' : 'уменьшено';
-        window.showNotification(`Количество товара "${window.AppState.cart[itemIndex].name}" ${action} до ${newQuantity} шт.`, 'info');
+        window.showNotification(`Количество товара "${currentItem.name}" ${action} до ${newQuantity} шт.`, 'info');
     }
 }
 
-// Удаление товара из корзины
+// Удаление товара из корзины - КЛЮЧЕВАЯ ИСПРАВЛЕННАЯ ФУНКЦИЯ
 function removeCartItem(productId) {
     console.log('Removing item:', productId);
     
-    // Убедимся что AppState инициализирован
-    if (!window.AppState) {
-        window.AppState = {
-            products: [],
-            cart: [],
-            cartCount: 0,
-            cartTotal: 0
-        };
-    }
-    
-    if (!window.AppState.cart) window.AppState.cart = [];
+    // Получаем текущую корзину из localStorage
+    let savedCart = JSON.parse(localStorage.getItem('cart')) || [];
+    console.log('Cart before removal:', savedCart);
     
     // Находим товар перед удалением
-    const itemIndex = window.AppState.cart.findIndex(item => item.id === productId);
+    const itemIndex = savedCart.findIndex(item => item.id === productId);
     if (itemIndex === -1) return;
     
-    const itemName = window.AppState.cart[itemIndex].name;
+    const itemName = savedCart[itemIndex].name;
     
-    // УДАЛЯЕМ товар - создаем новый массив без этого элемента
-    window.AppState.cart = window.AppState.cart.filter(item => item.id !== productId);
+    // Удаляем товар
+    savedCart = savedCart.filter(item => item.id !== productId);
+    console.log('Cart after removal:', savedCart);
     
-    console.log('Cart after removal:', window.AppState.cart);
+    // Сохраняем ОБНОВЛЕННУЮ корзину в localStorage
+    localStorage.setItem('cart', JSON.stringify(savedCart));
     
-    // Обновляем состояние
-    if (window.updateCartTotals) window.updateCartTotals();
-    if (window.updateCartUI) window.updateCartUI();
-    if (window.updateCartCounter) window.updateCartCounter(); // Добавлено
+    // Обновляем cartState
+    if (window.cartState) {
+        window.cartState.cart = savedCart;
+    }
     
-    // Сохраняем и обновляем
-    if (window.saveCartToStorage) window.saveCartToStorage();
+    // Обновляем AppState
+    if (window.AppState) {
+        window.AppState.cart = savedCart;
+        window.AppState.cartCount = savedCart.reduce((total, item) => total + (item.quantity || 0), 0);
+    }
+    
+    // Обновляем отображение
+    updateCartCounter();
     renderCartItems();
     
     if (window.showNotification) {
@@ -207,29 +197,39 @@ function toggleCart() {
     }
 }
 
-// Оформление заказа
+// Оформление заказа - ОЧИЩАЕМ КОРЗИНУ ПОЛНОСТЬЮ
 function checkout() {
-    if (!window.AppState || !window.AppState.cart || window.AppState.cart.length === 0) {
+    const cart = window.cartState ? window.cartState.getCart() : [];
+    
+    if (!cart || cart.length === 0) {
         if (window.showNotification) {
             window.showNotification('Корзина пуста. Добавьте товары перед оформлением заказа.', 'error');
         }
         return;
     }
     
+    const total = window.cartState ? window.cartState.getTotal() : 0;
+    
     if (window.showNotification) {
-        window.showNotification(`Заказ на сумму ${window.AppState.cartTotal} ₽ оформлен! Менеджер свяжется с вами в течение 15 минут.`, 'success');
+        window.showNotification(`Заказ на сумму ${total} ₽ оформлен! Менеджер свяжется с вами в течение 15 минут.`, 'success');
     }
     
-    // Очищаем корзину
-    window.AppState.cart = [];
+    // ПОЛНОСТЬЮ очищаем корзину
+    localStorage.removeItem('cart');
     
-    // Обновляем состояние
-    if (window.updateCartTotals) window.updateCartTotals();
-    if (window.updateCartUI) window.updateCartUI();
-    if (window.updateCartCounter) window.updateCartCounter(); // Добавлено
+    // Обновляем все состояния
+    if (window.cartState) {
+        window.cartState.cart = [];
+    }
     
-    // Сохраняем и обновляем
-    if (window.saveCartToStorage) window.saveCartToStorage();
+    if (window.AppState) {
+        window.AppState.cart = [];
+        window.AppState.cartCount = 0;
+        window.AppState.cartTotal = 0;
+    }
+    
+    // Обновляем отображение
+    updateCartCounter();
     renderCartItems();
     
     setTimeout(() => toggleCart(), 1000);
@@ -264,11 +264,10 @@ function getCategoryName(category) {
     return categories[category] || category;
 }
 
-
 // Экспортируем функции глобально
 window.renderCartItems = renderCartItems;
 window.updateCartItemQuantity = updateCartItemQuantity;
 window.removeCartItem = removeCartItem;
 window.toggleCart = toggleCart;
 window.checkout = checkout;
-window.updateCartCounter = updateCartCounter; // Добавлено
+window.updateCartCounter = updateCartCounter;

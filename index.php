@@ -401,6 +401,7 @@
     <!-- Подключение скриптов -->
     <script src="js/main.js"></script>
     <script src="js/products.js"></script>
+    <script src="js/cart-state.js"></script>
     <script src="js/cart.js"></script>
 </body>
 </html>
