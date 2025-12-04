@@ -1,12 +1,63 @@
 <?php
-// process_order.php
+// process_order.php - в начало файла
 session_start();
+
+// Подключаем товары напрямую
+require_once 'products.php';
+require_once 'includes/database.php';
 
 // Проверяем, есть ли данные в сессии
 if (!isset($_SESSION['order_data'])) {
     header('Location: index.php');
     exit;
 }
+
+// Проверяем наличие товаров еще раз перед оформлением
+$cartItems = $_SESSION['order_data']['cart_items'];
+$allAvailable = true;
+$unavailableItems = [];
+
+foreach ($cartItems as $item) {
+    // Ищем товар в оригинальном массиве
+    $found = false;
+    $availableStock = 0;
+    
+    foreach ($products as $product) {
+        if ($product['id'] == $item['id']) {
+            $found = true;
+            $availableStock = $product['inStock'];
+            break;
+        }
+    }
+    
+    if (!$found || $item['quantity'] > $availableStock) {
+        $allAvailable = false;
+        $unavailableItems[] = [
+            'name' => $item['name'],
+            'requested' => $item['quantity'],
+            'available' => $found ? $availableStock : 0
+        ];
+    }
+}
+
+// Если товары стали недоступны - показываем ошибку
+if (!$allAvailable) {
+    $errorMessage = "К сожалению, пока вы оформляли заказ, некоторые товары закончились:\n";
+    foreach ($unavailableItems as $item) {
+        if ($item['available'] == 0) {
+            $errorMessage .= "\n- {$item['name']}: товар не найден";
+        } else {
+            $errorMessage .= "\n- {$item['name']}: запрошено {$item['requested']} шт., в наличии осталось {$item['available']} шт.";
+        }
+    }
+    $errorMessage .= "\n\nПожалуйста, вернитесь в корзину и измените заказ.";
+    
+    $_SESSION['order_error'] = $errorMessage;
+    header('Location: index.php');
+    exit;
+}
+
+// ... остальной код без изменений
 
 // Получаем данные из формы
 $orderData = [
@@ -23,11 +74,39 @@ $orderData = [
         'method' => htmlspecialchars($_POST['payment_method'] ?? 'cash')
     ],
     'comment' => htmlspecialchars($_POST['comment'] ?? ''),
-    'cart_items' => $_SESSION['order_data']['cart_items'],
+    'cart_items' => $cartItems,
     'total_amount' => $_SESSION['order_data']['total_amount'],
     'order_date' => $_SESSION['order_data']['created_at'],
     'order_number' => 'GB-' . date('Ymd') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT)
 ];
+
+// РЕЗЕРВИРУЕМ ТОВАРЫ НА СКЛАДЕ
+$reservationSuccess = true;
+$reservationErrors = [];
+
+foreach ($cartItems as $item) {
+    $reserved = ProductDatabase::reserveProduct($item['id'], $item['quantity']);
+    if (!$reserved) {
+        $reservationSuccess = false;
+        $reservationErrors[] = $item['name'];
+    }
+}
+
+// Если резервирование не удалось - отменяем заказ
+if (!$reservationSuccess) {
+    $errorMessage = "Произошла ошибка при резервировании товаров:\n";
+    foreach ($reservationErrors as $error) {
+        $errorMessage .= "\n- {$error}";
+    }
+    $errorMessage .= "\n\nПожалуйста, повторите попытку оформления заказа.";
+    
+    $_SESSION['order_error'] = $errorMessage;
+    header('Location: index.php');
+    exit;
+}
+
+// Сохраняем заказ в базу данных
+ProductDatabase::saveOrder($orderData);
 
 // Сохраняем номер заказа в сессии
 $_SESSION['last_order_number'] = $orderData['order_number'];
@@ -41,7 +120,7 @@ function getDeliveryMethodName($method) {
         'pickup' => 'Самовывоз',
         'courier' => 'Курьерская доставка',
         'russia' => 'Доставка по России',
-        'ozon' => 'ОЗОН Логистика' // Добавляем новый метод
+        'ozon' => 'ОЗОН Логистика'
     ];
     return $methods[$method] ?? $method;
 }
@@ -470,25 +549,23 @@ function getCategoryName($category) {
                     <div class="summary-item">
                         <span>Доставка:</span>
                         <span>
-                            <?php if ($orderData['delivery']['method'] === 'pickup'): ?>
-                                Бесплатно
-                            <?php elseif ($orderData['delivery']['method'] === 'courier'): ?>
-                                500 ₽
-                            <?php else: ?>
-                                от 800 ₽
-                            <?php endif; ?>
-                        </span>
-                    </div>
-                    <div class="summary-item total">
-                        <span>Итого:</span>
-                        <span>
                             <?php 
                             $deliveryCost = 0;
                             if ($orderData['delivery']['method'] === 'courier') {
                                 $deliveryCost = 500;
                             } elseif ($orderData['delivery']['method'] === 'russia') {
                                 $deliveryCost = 800;
+                            } elseif ($orderData['delivery']['method'] === 'ozon') {
+                                $deliveryCost = 400;
                             }
+                            echo $deliveryCost > 0 ? number_format($deliveryCost, 0, '', ' ') . ' ₽' : 'Бесплатно';
+                            ?>
+                        </span>
+                    </div>
+                    <div class="summary-item total">
+                        <span>Итого:</span>
+                        <span>
+                            <?php 
                             echo number_format($orderData['total_amount'] + $deliveryCost, 0, '', ' '); 
                             ?> ₽
                         </span>

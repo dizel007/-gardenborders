@@ -10,7 +10,7 @@ $products = [
         'category' => 'classic', 
         'images' => ['bordur_classic_1.jpg', 'bordur_classic_2.jpg', 'bordur_classic_3.jpg'], // массив изображений
         'description' => 'Профилированный бордюр для аккуратных грядок', 
-        'inStock' => 7, 
+        'inStock' => 17, 
         'colors' => 3, 
         'badge' => 'Хит'
     ],

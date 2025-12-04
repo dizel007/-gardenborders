@@ -1,0 +1,46 @@
+[
+    {
+        "customer": {
+            "full_name": "67567567",
+            "phone": "+7 (675) 675-67-56",
+            "email": ""
+        },
+        "delivery": {
+            "method": "pickup",
+            "address": ""
+        },
+        "payment": {
+            "method": "cash"
+        },
+        "comment": "",
+        "cart_items": [
+            {
+                "id": 1,
+                "name": "Пластиковый садовый бордюр Кантри черный, длина 10 м, высота 110 мм",
+                "price": 450,
+                "image": "bordur_classic_1.jpg",
+                "category": "classic",
+                "quantity": 1
+            },
+            {
+                "id": 2,
+                "name": "Пластиковый садовый бордюр Кантри коричневый, длина 10 м, высота 110 мм",
+                "price": 850,
+                "image": "bordur_classic_brown_1.jpg",
+                "category": "classic",
+                "quantity": 1
+            },
+            {
+                "id": 3,
+                "name": "Пластиковый садовый бордюр Кантри зеленый, длина 10 м, высота 110 мм",
+                "price": 1250,
+                "image": "bordur_classic_green_1.jpg",
+                "category": "classic",
+                "quantity": 1
+            }
+        ],
+        "total_amount": 2550,
+        "order_date": "2025-12-04 16:19:47",
+        "order_number": "GB-20251204-0519"
+    }
+]

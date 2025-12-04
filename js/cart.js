@@ -1,4 +1,4 @@
-// cart.js (полностью переписанный)
+// cart.js
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Cart module loaded');
     
@@ -58,14 +58,34 @@ function renderCartItems() {
     // Отображаем товары
     cartItemsContainer.innerHTML = '';
     cart.forEach(item => {
+        // Находим информацию о товаре для проверки наличия
+        const productInfo = window.productsData ? window.productsData.find(p => p.id === item.id) : null;
+        const currentStock = productInfo ? productInfo.inStock : 0;
+        const isOutOfStock = currentStock === 0;
+        const isLowStock = currentStock > 0 && currentStock < item.quantity;
+        
         const cartItem = document.createElement('div');
         cartItem.className = 'cart-item';
         cartItem.dataset.id = item.id;
+        
+        if (isOutOfStock) {
+            cartItem.classList.add('out-of-stock');
+        } else if (isLowStock) {
+            cartItem.classList.add('low-stock');
+        }
         
         // Проверяем тип изображения
         const imageElement = item.image && (item.image.includes('.jpg') || item.image.includes('.png') || item.image.includes('.jpeg'))
             ? `<img src="images/products/${item.image}" alt="${item.name}" onerror="this.onerror=null; this.src='images/products/default.jpg'; this.nextElementSibling.style.display='flex';">`
             : `<i class="${item.image || 'fas fa-box'}"></i>`;
+        
+        // Сообщение о наличии
+        let stockMessage = '';
+        if (isOutOfStock) {
+            stockMessage = '<div class="stock-warning" style="color: #f44336; font-size: 12px; margin-top: 5px;"><i class="fas fa-exclamation-circle"></i> Товар закончился</div>';
+        } else if (isLowStock) {
+            stockMessage = `<div class="stock-warning" style="color: #ff9800; font-size: 12px; margin-top: 5px;"><i class="fas fa-exclamation-triangle"></i> На складе осталось только ${currentStock} шт.</div>`;
+        }
         
         cartItem.innerHTML = `
             <div class="cart-item-image">
@@ -75,10 +95,11 @@ function renderCartItems() {
                 <div class="cart-item-title">${item.name}</div>
                 <div class="cart-item-category">${getCategoryName(item.category)}</div>
                 <div class="cart-item-price">${item.price} ₽/шт</div>
+                ${stockMessage}
                 <div class="cart-item-controls">
-                    <button class="quantity-btn" onclick="updateCartItemQuantity(${item.id}, -1)">-</button>
+                    <button class="quantity-btn" onclick="updateCartItemQuantity(${item.id}, -1)" ${isOutOfStock ? 'disabled' : ''}>-</button>
                     <span class="quantity">${item.quantity}</span>
-                    <button class="quantity-btn" onclick="updateCartItemQuantity(${item.id}, 1)">+</button>
+                    <button class="quantity-btn" onclick="updateCartItemQuantity(${item.id}, 1)" ${isOutOfStock ? 'disabled' : ''}>+</button>
                     <button class="remove-item" onclick="removeCartItem(${item.id})">
                         <i class="fas fa-trash"></i> Удалить
                     </button>
@@ -94,8 +115,25 @@ function renderCartItems() {
     }
 }
 
-// Обновление количества товара
+// Обновление количества товара с проверкой наличия
 function updateCartItemQuantity(productId, change) {
+    // Находим товар в данных продуктов
+    const product = window.productsData ? window.productsData.find(p => p.id === productId) : null;
+    
+    // Проверяем наличие на складе при увеличении
+    if (change > 0 && product) {
+        const cart = window.cartState ? window.cartState.getCart() : [];
+        const itemIndex = cart.findIndex(item => item.id === productId);
+        const currentQuantity = itemIndex > -1 ? cart[itemIndex].quantity : 0;
+        
+        if (currentQuantity >= product.inStock) {
+            if (window.showNotification) {
+                window.showNotification(`Нельзя добавить больше товара "${product.name}". В наличии только ${product.inStock} шт.`, 'error');
+            }
+            return;
+        }
+    }
+    
     // Проверяем наличие товара в корзине
     const cart = window.cartState ? window.cartState.getCart() : [];
     const itemIndex = cart.findIndex(item => item.id === productId);
@@ -137,7 +175,7 @@ function updateCartItemQuantity(productId, change) {
     }
 }
 
-// Удаление товара из корзины - КЛЮЧЕВАЯ ИСПРАВЛЕННАЯ ФУНКЦИЯ
+// Удаление товара из корзины
 function removeCartItem(productId) {
     console.log('Removing item:', productId);
     
@@ -207,6 +245,36 @@ function checkout() {
         }
         return;
     }
+    
+    // Проверяем наличие товаров перед оформлением
+    let hasOutOfStock = false;
+    let outOfStockItems = [];
+    
+    cart.forEach(item => {
+        const product = window.productsData ? window.productsData.find(p => p.id === item.id) : null;
+        if (product && item.quantity > product.inStock) {
+            hasOutOfStock = true;
+            outOfStockItems.push({
+                name: item.name,
+                requested: item.quantity,
+                available: product.inStock
+            });
+        }
+    });
+    
+    if (hasOutOfStock) {
+        let errorMessage = 'Некоторые товары недоступны в запрошенном количестве:\n';
+        outOfStockItems.forEach(item => {
+            errorMessage += `\n- ${item.name}: запрошено ${item.requested} шт., в наличии ${item.available} шт.`;
+        });
+        
+        if (window.showNotification) {
+            window.showNotification(errorMessage, 'error');
+        }
+        return;
+    }
+    
+    const total = window.cartState ? window.cartState.getTotal() : 0;
     
     // Создаем форму для отправки данных на сервер
     const form = document.createElement('form');

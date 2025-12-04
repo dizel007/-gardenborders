@@ -13,6 +13,31 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Показываем ошибки оформления заказа если они есть -->
+    <?php
+    session_start();
+    if (isset($_SESSION['checkout_error'])): ?>
+        <div class="error-notification">
+            <div class="error-content">
+                <h3><i class="fas fa-exclamation-triangle"></i> Ошибка оформления заказа</h3>
+                <p><?php echo nl2br(htmlspecialchars($_SESSION['checkout_error'])); ?></p>
+                <button onclick="this.parentElement.parentElement.remove()" class="close-error">×</button>
+            </div>
+        </div>
+        <?php unset($_SESSION['checkout_error']); ?>
+    <?php endif; ?>
+
+    <?php if (isset($_SESSION['order_error'])): ?>
+        <div class="error-notification">
+            <div class="error-content">
+                <h3><i class="fas fa-exclamation-triangle"></i> Ошибка при оформлении заказа</h3>
+                <p><?php echo nl2br(htmlspecialchars($_SESSION['order_error'])); ?></p>
+                <button onclick="this.parentElement.parentElement.remove()" class="close-error">×</button>
+            </div>
+        </div>
+        <?php unset($_SESSION['order_error']); ?>
+    <?php endif; ?>
+
     <!-- Шапка сайта - ВЕРХНЯЯ ИНФОРМАЦИОННАЯ ЧАСТЬ -->
     <div class="top-header">
         <div class="container">

@@ -2,9 +2,65 @@
 // checkout.php
 session_start();
 
+// Подключаем базу данных товаров
+require_once 'includes/database.php';
+require_once 'products.php'; // Подключаем напрямую
+
 // Проверяем, переданы ли данные о товарах
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['cart_items'])) {
     $cartItems = json_decode($_POST['cart_items'], true);
+    
+    // Проверяем наличие всех товаров НАПРЯМУЮ из массива $products
+    $allAvailable = true;
+    $unavailableItems = [];
+    
+    foreach ($cartItems as $item) {
+        // Ищем товар в оригинальном массиве
+        $found = false;
+        $availableStock = 0;
+        
+        foreach ($products as $product) {
+            if ($product['id'] == $item['id']) {
+                $found = true;
+                $availableStock = $product['inStock'];
+                break;
+            }
+        }
+        
+        if (!$found) {
+            $allAvailable = false;
+            $unavailableItems[] = [
+                'name' => $item['name'],
+                'requested' => $item['quantity'],
+                'available' => 0
+            ];
+        } elseif ($item['quantity'] > $availableStock) {
+            $allAvailable = false;
+            $unavailableItems[] = [
+                'name' => $item['name'],
+                'requested' => $item['quantity'],
+                'available' => $availableStock
+            ];
+        }
+    }
+    
+    // Если какие-то товары недоступны - показываем ошибку
+    if (!$allAvailable) {
+        $errorMessage = "Некоторые товары недоступны в запрошенном количестве:\n";
+        foreach ($unavailableItems as $item) {
+            if ($item['available'] == 0) {
+                $errorMessage .= "\n- {$item['name']}: товар не найден";
+            } else {
+                $errorMessage .= "\n- {$item['name']}: запрошено {$item['requested']} шт., в наличии {$item['available']} шт.";
+            }
+        }
+        $errorMessage .= "\n\nПожалуйста, вернитесь в корзину и измените количество товаров.";
+        
+        // Сохраняем ошибку в сессии и перенаправляем обратно
+        $_SESSION['checkout_error'] = $errorMessage;
+        header('Location: index.php');
+        exit;
+    }
 } else {
     // Если данные не переданы, перенаправляем на главную
     header('Location: index.php');
@@ -36,6 +92,8 @@ $_SESSION['order_data'] = [
     'created_at' => date('Y-m-d H:i:s')
 ];
 ?>
+
+<!-- Остальной HTML код остается без изменений -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -48,7 +106,6 @@ $_SESSION['order_data'] = [
     <link rel="stylesheet" href="styles/checkout.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-
 </head>
 <body>
     <!-- Шапка сайта -->
@@ -122,6 +179,16 @@ $_SESSION['order_data'] = [
                     <h2><i class="fas fa-box"></i> Состав заказа</h2>
                     <div class="order-items">
                         <?php foreach ($cartItems as $item): ?>
+                            <?php 
+                            // Находим товар в оригинальном массиве для получения актуального остатка
+                            $currentStock = 0;
+                            foreach ($products as $product) {
+                                if ($product['id'] == $item['id']) {
+                                    $currentStock = $product['inStock'];
+                                    break;
+                                }
+                            }
+                            ?>
                             <div class="order-item">
                                 <div class="item-image">
                                     <?php 
@@ -138,6 +205,15 @@ $_SESSION['order_data'] = [
                                 <div class="item-details">
                                     <div class="item-name"><?php echo htmlspecialchars($item['name']); ?></div>
                                     <div class="item-category"><?php echo getCategoryName($item['category']); ?></div>
+                                    <div class="stock-info">
+                                        <i class="fas fa-warehouse"></i>
+                                        <span>На складе: <?php echo $currentStock; ?> шт.</span>
+                                        <?php if ($item['quantity'] > $currentStock): ?>
+                                            <span style="color: #f44336; font-size: 12px; margin-left: 10px;">
+                                                <i class="fas fa-exclamation-triangle"></i> Запрошено больше чем есть в наличии
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
                                     <div class="item-meta">
                                         <div class="item-price"><?php echo number_format($item['price'], 0, '', ' '); ?> ₽</div>
                                         <div class="item-quantity">Количество: <?php echo $item['quantity']; ?> шт.</div>
@@ -173,12 +249,12 @@ $_SESSION['order_data'] = [
                         </div>
                         <div class="form-group">
                             <label for="phone">Телефон *</label>
-                            <input type="tel" id="phone" name="phone" required placeholder="+7 (___) ___-__-__">
+                            <input type="tel" id="phone" name="phone" required placeholder="79161234567">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input type="email" id="email" name="email">
+                        <input type="email" id="email" name="email" placeholder="example@mail.ru">
                     </div>
                 </div>
                 
@@ -219,7 +295,7 @@ $_SESSION['order_data'] = [
                             <div class="delivery-time">3-7 дней</div>
                         </label>
 
-                        <label class="delivery-option">
+                         <label class="delivery-option">
                             <input type="radio" name="delivery_method" value="ozon">
                             <div class="delivery-icon">
                                 <i class="fas fa-shipping-fast"></i>
@@ -229,35 +305,33 @@ $_SESSION['order_data'] = [
                             <div class="delivery-price">от 400 ₽</div>
                             <div class="delivery-time">3-7 дней</div>
                         </label>
-
                     </div>
                 </div>
                 
                 <!-- Секция оплаты -->
-            <div class="payment-section">
-                <h2><i class="fas fa-credit-card"></i> Способ оплаты</h2>
-                <div class="payment-options">
-                    <label class="payment-option selected" id="cashPaymentOption">
-                        <input type="radio" name="payment_method" value="cash" checked>
-                        <div class="payment-icon">
-                            <i class="fas fa-money-bill-wave"></i>
-                        </div>
-                        <h3>Наличными</h3>
-                        <p>Оплата при получении</p>
-                        <!-- Здесь будет добавляться лейбл "Только для самовывоза" через JS -->
-                    </label>
-                    
-                    <label class="payment-option" id="cardPaymentOption">
-                        <input type="radio" name="payment_method" value="card">
-                        <div class="payment-icon">
-                            <i class="fas fa-credit-card"></i>
-                        </div>
-                        <h3>Банковской картой</h3>
-                        <p>Онлайн оплата на сайте</p>
-                    </label>
+                <div class="payment-section">
+                    <h2><i class="fas fa-credit-card"></i> Способ оплаты</h2>
+                    <div class="payment-options">
+                        <label class="payment-option selected" id="cashPaymentOption">
+                            <input type="radio" name="payment_method" value="cash" checked>
+                            <div class="payment-icon">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <h3>Наличными</h3>
+                            <p>Оплата при получении</p>
+                        </label>
+                        
+                        <label class="payment-option" id="cardPaymentOption">
+                            <input type="radio" name="payment_method" value="card">
+                            <div class="payment-icon">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <h3>Банковской картой</h3>
+                            <p>Онлайн оплата на сайте</p>
+                        </label>
+                    </div>
                 </div>
-            </div>
-                            
+                
                 <!-- Секция комментария -->
                 <div class="form-section">
                     <h2><i class="fas fa-comment"></i> Комментарий к заказу</h2>
@@ -302,6 +376,242 @@ $_SESSION['order_data'] = [
         </div>
     </footer>
 
-  <script src="js/checkout.js"></script>
+    <script>
+        // JavaScript для взаимодействия с выбором опций
+        document.addEventListener('DOMContentLoaded', function() {
+            // Получаем элементы
+            const deliveryOptions = document.querySelectorAll('.delivery-option');
+            const paymentOptions = document.querySelectorAll('.payment-option');
+            const cashPaymentOption = document.querySelector('.payment-option input[value="cash"]').closest('.payment-option');
+            const cardPaymentOption = document.querySelector('.payment-option input[value="card"]').closest('.payment-option');
+            const cashRadio = document.querySelector('input[value="cash"]');
+            const cardRadio = document.querySelector('input[value="card"]');
+            
+            // Функция для проверки возможности оплаты наличными
+            function checkCashPaymentAvailability() {
+                const selectedDelivery = document.querySelector('input[name="delivery_method"]:checked');
+                
+                if (selectedDelivery && selectedDelivery.value === 'pickup') {
+                    // Для самовывоза - наличные доступны
+                    cashPaymentOption.classList.remove('disabled');
+                    cashRadio.disabled = false;
+                    
+                    // Добавляем/удаляем лейбл
+                    let disabledLabel = cashPaymentOption.querySelector('.disabled-label');
+                    if (disabledLabel) {
+                        disabledLabel.remove();
+                    }
+                } else {
+                    // Для других способов доставки - наличные недоступны
+                    cashPaymentOption.classList.add('disabled');
+                    cashRadio.disabled = true;
+                    
+                    // Если наличные были выбраны - переключаем на карту
+                    if (cashRadio.checked) {
+                        cardRadio.checked = true;
+                        cashPaymentOption.classList.remove('selected');
+                        cardPaymentOption.classList.add('selected');
+                    }
+                    
+                    // Добавляем лейбл "Только для самовывоза"
+                    let disabledLabel = cashPaymentOption.querySelector('.disabled-label');
+                    if (!disabledLabel) {
+                        disabledLabel = document.createElement('span');
+                        disabledLabel.className = 'disabled-label';
+                        disabledLabel.textContent = 'Только для самовывоза';
+                        cashPaymentOption.appendChild(disabledLabel);
+                    }
+                }
+            }
+            
+            // Обработка выбора способа доставки
+            deliveryOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    deliveryOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    // Проверяем доступность наличных
+                    checkCashPaymentAvailability();
+                });
+            });
+            
+            // Обработка выбора способа оплаты (только если не заблокирован)
+            paymentOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const radio = this.querySelector('input[type="radio"]');
+                    if (radio.disabled) return;
+                    
+                    paymentOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+            
+            // Инициализация при загрузке
+            checkCashPaymentAvailability();
+            
+            // Простой ввод телефона - только цифры
+            const phoneInput = document.getElementById('phone');
+            if (phoneInput) {
+                phoneInput.placeholder = "79161234567";
+                
+                phoneInput.addEventListener('input', function(e) {
+                    this.value = this.value.replace(/\D/g, '');
+                    
+                    if (this.value.length > 11) {
+                        this.value = this.value.substring(0, 11);
+                    }
+                });
+                
+                phoneInput.addEventListener('keydown', function(e) {
+                    if ((e.key >= '0' && e.key <= '9') || 
+                        e.key === 'Backspace' || 
+                        e.key === 'Delete' ||
+                        e.key === 'Tab' ||
+                        e.key === 'ArrowLeft' ||
+                        e.key === 'ArrowRight' ||
+                        e.key === 'ArrowUp' ||
+                        e.key === 'ArrowDown' ||
+                        e.key === 'Home' ||
+                        e.key === 'End') {
+                        return;
+                    }
+                    
+                    e.preventDefault();
+                });
+            }
+            
+            // Автоматическое форматирование ФИО
+            const fullNameInput = document.getElementById('full_name');
+            if (fullNameInput) {
+                fullNameInput.addEventListener('blur', function() {
+                    if (this.value) {
+                        this.value = this.value
+                            .toLowerCase()
+                            .split(' ')
+                            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                            .join(' ');
+                    }
+                });
+            }
+            
+            // Валидация формы при отправке
+            const form = document.getElementById('checkoutForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const requiredFields = form.querySelectorAll('[required]');
+                    let isValid = true;
+                    
+                    // Сбрасываем все ошибки
+                    form.querySelectorAll('.error-message').forEach(error => error.remove());
+                    form.querySelectorAll('input, textarea').forEach(field => {
+                        field.style.borderColor = '';
+                    });
+                    
+                    // Проверка обязательных полей
+                    requiredFields.forEach(field => {
+                        if (!field.value.trim()) {
+                            isValid = false;
+                            field.style.borderColor = '#f44336';
+                            
+                            let errorDiv = field.parentElement.querySelector('.error-message');
+                            if (!errorDiv) {
+                                errorDiv = document.createElement('div');
+                                errorDiv.className = 'error-message';
+                                errorDiv.style.color = '#f44336';
+                                errorDiv.style.fontSize = '12px';
+                                errorDiv.style.marginTop = '5px';
+                                errorDiv.textContent = 'Это поле обязательно для заполнения';
+                                field.parentElement.appendChild(errorDiv);
+                            }
+                        }
+                    });
+                    
+                    // Проверка телефона
+                    const phone = document.getElementById('phone');
+                    if (phone && phone.value) {
+                        const phoneDigits = phone.value.replace(/\D/g, '');
+                        
+                        if (phoneDigits.length !== 11) {
+                            isValid = false;
+                            phone.style.borderColor = '#f44336';
+                            
+                            let errorDiv = phone.parentElement.querySelector('.error-message');
+                            if (!errorDiv) {
+                                errorDiv = document.createElement('div');
+                                errorDiv.className = 'error-message';
+                                errorDiv.style.color = '#f44336';
+                                errorDiv.style.fontSize = '12px';
+                                errorDiv.style.marginTop = '5px';
+                                errorDiv.textContent = 'Введите 11 цифр номера телефона';
+                                phone.parentElement.appendChild(errorDiv);
+                            }
+                        } else if (!phoneDigits.startsWith('7') && !phoneDigits.startsWith('8')) {
+                            isValid = false;
+                            phone.style.borderColor = '#f44336';
+                            
+                            let errorDiv = phone.parentElement.querySelector('.error-message');
+                            if (!errorDiv) {
+                                errorDiv = document.createElement('div');
+                                errorDiv.className = 'error-message';
+                                errorDiv.style.color = '#f44336';
+                                errorDiv.style.fontSize = '12px';
+                                errorDiv.style.marginTop = '5px';
+                                errorDiv.textContent = 'Номер телефона должен начинаться с 7 или 8';
+                                phone.parentElement.appendChild(errorDiv);
+                            }
+                        }
+                    }
+                    
+                    // Проверка email если указан
+                    const email = document.getElementById('email');
+                    if (email && email.value) {
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (!emailRegex.test(email.value)) {
+                            isValid = false;
+                            email.style.borderColor = '#f44336';
+                            
+                            let errorDiv = email.parentElement.querySelector('.error-message');
+                            if (!errorDiv) {
+                                errorDiv = document.createElement('div');
+                                errorDiv.className = 'error-message';
+                                errorDiv.style.color = '#f44336';
+                                errorDiv.style.fontSize = '12px';
+                                errorDiv.style.marginTop = '5px';
+                                errorDiv.textContent = 'Введите корректный email адрес';
+                                email.parentElement.appendChild(errorDiv);
+                            }
+                        }
+                    }
+                    
+                    if (!isValid) {
+                        e.preventDefault();
+                        
+                        const firstError = form.querySelector('[style*="border-color: rgb(244, 67, 54)"]');
+                        if (firstError) {
+                            firstError.scrollIntoView({ 
+                                behavior: 'smooth', 
+                                block: 'center' 
+                            });
+                            
+                            setTimeout(() => {
+                                firstError.focus();
+                            }, 500);
+                        }
+                    } else {
+                        // Если валидация прошла успешно, форматируем телефон перед отправкой
+                        if (phone && phone.value) {
+                            const phoneDigits = phone.value.replace(/\D/g, '');
+                            if (phoneDigits.length === 11) {
+                                phone.value = '+7 (' + phoneDigits.substring(1, 4) + ') ' + 
+                                             phoneDigits.substring(4, 7) + '-' + 
+                                             phoneDigits.substring(7, 9) + '-' + 
+                                             phoneDigits.substring(9, 11);
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
