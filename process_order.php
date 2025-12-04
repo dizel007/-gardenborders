@@ -40,7 +40,8 @@ function getDeliveryMethodName($method) {
     $methods = [
         'pickup' => 'Самовывоз',
         'courier' => 'Курьерская доставка',
-        'russia' => 'Доставка по России'
+        'russia' => 'Доставка по России',
+        'ozon' => 'ОЗОН Логистика' // Добавляем новый метод
     ];
     return $methods[$method] ?? $method;
 }

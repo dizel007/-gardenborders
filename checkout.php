@@ -45,466 +45,10 @@ $_SESSION['order_data'] = [
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/header.css">
     <link rel="stylesheet" href="styles/responsive.css">
+    <link rel="stylesheet" href="styles/checkout.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        body {
-            padding-top: 70px;
-            background: linear-gradient(180deg, #f9f9f9 0%, #ffffff 100%);
-            min-height: 100vh;
-        }
-        
-        .checkout-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-        
-        .checkout-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        
-        .checkout-header h1 {
-            color: var(--primary-green);
-            margin-bottom: 10px;
-        }
-        
-        .checkout-header p {
-            color: var(--earth-brown);
-            font-size: 18px;
-        }
-        
-        .checkout-progress {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 50px;
-            position: relative;
-        }
-        
-        .checkout-progress:before {
-            content: '';
-            position: absolute;
-            top: 15px;
-            left: 10%;
-            right: 10%;
-            height: 3px;
-            background: #e0e0e0;
-            z-index: 1;
-        }
-        
-        .progress-step {
-            text-align: center;
-            position: relative;
-            z-index: 2;
-            flex: 1;
-        }
-        
-        .progress-step.active .step-circle {
-            background: var(--primary-green);
-            color: white;
-            border-color: var(--primary-green);
-        }
-        
-        .step-circle {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: white;
-            border: 2px solid #e0e0e0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 10px;
-            font-weight: 600;
-            color: #999;
-        }
-        
-        .step-label {
-            font-size: 14px;
-            color: #666;
-        }
-        
-        .active .step-label {
-            color: var(--primary-green);
-            font-weight: 600;
-        }
-        
-        .checkout-content {
-            background: white;
-            border-radius: var(--radius);
-            padding: 40px;
-            box-shadow: var(--shadow);
-            margin-bottom: 30px;
-        }
-        
-        .order-summary {
-            margin-bottom: 40px;
-        }
-        
-        .order-summary h2 {
-            color: var(--primary-green);
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .order-items {
-            border: 1px solid #eee;
-            border-radius: var(--radius);
-            overflow: hidden;
-        }
-        
-        .order-item {
-            display: flex;
-            padding: 20px;
-            border-bottom: 1px solid #eee;
-            align-items: center;
-        }
-        
-        .order-item:last-child {
-            border-bottom: none;
-        }
-        
-        .item-image {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
-            border-radius: var(--radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 20px;
-            flex-shrink: 0;
-        }
-        
-        .item-image i {
-            font-size: 30px;
-            color: var(--primary-green);
-        }
-        
-        .item-details {
-            flex: 1;
-        }
-        
-        .item-name {
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: var(--dark-gray);
-        }
-        
-        .item-category {
-            font-size: 12px;
-            color: var(--primary-green);
-            background: var(--light-green);
-            padding: 3px 10px;
-            border-radius: 12px;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-        
-        .item-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .item-price {
-            color: var(--primary-green);
-            font-weight: 700;
-            font-size: 18px;
-        }
-        
-        .item-quantity {
-            color: #666;
-        }
-        
-        .order-total {
-            background: var(--light-green);
-            padding: 25px;
-            border-radius: var(--radius);
-            margin-top: 30px;
-        }
-        
-        .total-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .total-row.final {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary-green);
-            padding-top: 15px;
-            border-top: 2px solid #ddd;
-            margin-top: 20px;
-        }
-        
-        .delivery-section {
-            margin-bottom: 40px;
-        }
-        
-        .delivery-section h2 {
-            color: var(--primary-green);
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .delivery-options-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-        
-        .delivery-option {
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: var(--radius);
-            padding: 25px;
-            cursor: pointer;
-            transition: var(--transition);
-            position: relative;
-        }
-        
-        .delivery-option:hover {
-            border-color: var(--secondary-green);
-            transform: translateY(-5px);
-        }
-        
-        .delivery-option.selected {
-            border-color: var(--primary-green);
-            background: var(--light-green);
-        }
-        
-        .delivery-option input[type="radio"] {
-            position: absolute;
-            opacity: 0;
-        }
-        
-        .delivery-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
-        }
-        
-        .delivery-icon i {
-            font-size: 25px;
-            color: white;
-        }
-        
-        .delivery-option h3 {
-            color: var(--dark-gray);
-            margin-bottom: 10px;
-        }
-        
-        .delivery-price {
-            color: var(--primary-green);
-            font-weight: 700;
-            font-size: 20px;
-            margin-top: 15px;
-        }
-        
-        .delivery-time {
-            display: inline-block;
-            background: var(--accent-orange);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            margin-top: 10px;
-        }
-        
-        .payment-section {
-            margin-bottom: 40px;
-        }
-        
-        .payment-section h2 {
-            color: var(--primary-green);
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .payment-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-        
-        .payment-option {
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: var(--radius);
-            padding: 25px;
-            cursor: pointer;
-            transition: var(--transition);
-            text-align: center;
-        }
-        
-        .payment-option:hover {
-            border-color: var(--secondary-green);
-        }
-        
-        .payment-option.selected {
-            border-color: var(--primary-green);
-            background: var(--light-green);
-        }
-        
-        .payment-option input[type="radio"] {
-            position: absolute;
-            opacity: 0;
-        }
-        
-        .payment-icon {
-            font-size: 40px;
-            color: var(--primary-green);
-            margin-bottom: 15px;
-        }
-        
-        .checkout-actions {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            margin-top: 40px;
-        }
-        
-        .btn-back {
-            padding: 15px 40px;
-            background: white;
-            border: 2px solid var(--primary-green);
-            border-radius: 50px;
-            color: var(--primary-green);
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            transition: var(--transition);
-        }
-        
-        .btn-back:hover {
-            background: var(--light-green);
-            transform: translateY(-2px);
-        }
-        
-        .btn-submit {
-            padding: 15px 50px;
-            background: linear-gradient(135deg, var(--secondary-green), var(--primary-green));
-            border: none;
-            border-radius: 50px;
-            color: white;
-            font-weight: 600;
-            font-size: 18px;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .btn-submit:hover {
-            background: linear-gradient(135deg, var(--primary-green), #1b5e20);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(46, 125, 50, 0.3);
-        }
-        
-        .form-section {
-            margin-bottom: 40px;
-        }
-        
-        .form-section h2 {
-            color: var(--primary-green);
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--dark-gray);
-        }
-        
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: var(--radius);
-            font-size: 16px;
-            font-family: inherit;
-            transition: var(--transition);
-        }
-        
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary-green);
-            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
-        }
-        
-        .form-group textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-        
-        @media (max-width: 768px) {
-            .checkout-content {
-                padding: 25px;
-            }
-            
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .order-item {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .item-image {
-                margin-right: 0;
-                margin-bottom: 15px;
-            }
-            
-            .checkout-actions {
-                flex-direction: column;
-            }
-            
-            .btn-back,
-            .btn-submit {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-    </style>
+
 </head>
 <body>
     <!-- Шапка сайта -->
@@ -674,33 +218,46 @@ $_SESSION['order_data'] = [
                             <div class="delivery-price">от 800 ₽</div>
                             <div class="delivery-time">3-7 дней</div>
                         </label>
+
+                        <label class="delivery-option">
+                            <input type="radio" name="delivery_method" value="ozon">
+                            <div class="delivery-icon">
+                                <i class="fas fa-shipping-fast"></i>
+                            </div>
+                            <h3>ОЗОН Логистика</h3>
+                            <p>Доставка ОЗОН Логистикой в ПВЗ вашего города</p>
+                            <div class="delivery-price">от 400 ₽</div>
+                            <div class="delivery-time">3-7 дней</div>
+                        </label>
+
                     </div>
                 </div>
                 
                 <!-- Секция оплаты -->
-                <div class="payment-section">
-                    <h2><i class="fas fa-credit-card"></i> Способ оплаты</h2>
-                    <div class="payment-options">
-                        <label class="payment-option selected">
-                            <input type="radio" name="payment_method" value="cash" checked>
-                            <div class="payment-icon">
-                                <i class="fas fa-money-bill-wave"></i>
-                            </div>
-                            <h3>Наличными</h3>
-                            <p>Оплата при получении</p>
-                        </label>
-                        
-                        <label class="payment-option">
-                            <input type="radio" name="payment_method" value="card">
-                            <div class="payment-icon">
-                                <i class="fas fa-credit-card"></i>
-                            </div>
-                            <h3>Банковской картой</h3>
-                            <p>Онлайн оплата на сайте</p>
-                        </label>
-                    </div>
+            <div class="payment-section">
+                <h2><i class="fas fa-credit-card"></i> Способ оплаты</h2>
+                <div class="payment-options">
+                    <label class="payment-option selected" id="cashPaymentOption">
+                        <input type="radio" name="payment_method" value="cash" checked>
+                        <div class="payment-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <h3>Наличными</h3>
+                        <p>Оплата при получении</p>
+                        <!-- Здесь будет добавляться лейбл "Только для самовывоза" через JS -->
+                    </label>
+                    
+                    <label class="payment-option" id="cardPaymentOption">
+                        <input type="radio" name="payment_method" value="card">
+                        <div class="payment-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <h3>Банковской картой</h3>
+                        <p>Онлайн оплата на сайте</p>
+                    </label>
                 </div>
-                
+            </div>
+                            
                 <!-- Секция комментария -->
                 <div class="form-section">
                     <h2><i class="fas fa-comment"></i> Комментарий к заказу</h2>
@@ -745,71 +302,217 @@ $_SESSION['order_data'] = [
         </div>
     </footer>
 
-    <script>
-        // JavaScript для взаимодействия с выбором опций
-        document.addEventListener('DOMContentLoaded', function() {
-            // Обработка выбора способа доставки
-            const deliveryOptions = document.querySelectorAll('.delivery-option');
-            deliveryOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    deliveryOptions.forEach(opt => opt.classList.remove('selected'));
-                    this.classList.add('selected');
-                });
-            });
+// В секции
+ <script>
+
+    // JavaScript для взаимодействия с выбором опций
+    document.addEventListener('DOMContentLoaded', function() {
+        // Получаем элементы
+        const deliveryOptions = document.querySelectorAll('.delivery-option');
+        const paymentOptions = document.querySelectorAll('.payment-option');
+        const cashPaymentOption = document.querySelector('.payment-option input[value="cash"]').closest('.payment-option');
+        const cardPaymentOption = document.querySelector('.payment-option input[value="card"]').closest('.payment-option');
+        const cashRadio = document.querySelector('input[value="cash"]');
+        const cardRadio = document.querySelector('input[value="card"]');
+        
+        // Функция для проверки возможности оплаты наличными
+        function checkCashPaymentAvailability() {
+            const selectedDelivery = document.querySelector('input[name="delivery_method"]:checked');
             
-            // Обработка выбора способа оплаты
-            const paymentOptions = document.querySelectorAll('.payment-option');
-            paymentOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    paymentOptions.forEach(opt => opt.classList.remove('selected'));
-                    this.classList.add('selected');
-                });
-            });
-            
-            // Маска для телефона
-            const phoneInput = document.getElementById('phone');
-            if (phoneInput) {
-                phoneInput.addEventListener('input', function(e) {
-                    let value = this.value.replace(/\D/g, '');
-                    if (value.length > 0) {
-                        value = '+7 (' + value;
-                        if (value.length > 7) {
-                            value = value.slice(0, 7) + ') ' + value.slice(7);
-                        }
-                        if (value.length > 12) {
-                            value = value.slice(0, 12) + '-' + value.slice(12);
-                        }
-                        if (value.length > 15) {
-                            value = value.slice(0, 15) + '-' + value.slice(15);
-                        }
-                    }
-                    this.value = value;
-                });
+            if (selectedDelivery && selectedDelivery.value === 'pickup') {
+                // Для самовывоза - наличные доступны
+                cashPaymentOption.classList.remove('disabled');
+                cashRadio.disabled = false;
+                
+                // Добавляем/удаляем лейбл
+                let disabledLabel = cashPaymentOption.querySelector('.disabled-label');
+                if (disabledLabel) {
+                    disabledLabel.remove();
+                }
+            } else {
+                // Для других способов доставки - наличные недоступны
+                cashPaymentOption.classList.add('disabled');
+                cashRadio.disabled = true;
+                
+                // Если наличные были выбраны - переключаем на карту
+                if (cashRadio.checked) {
+                    cardRadio.checked = true;
+                    cashPaymentOption.classList.remove('selected');
+                    cardPaymentOption.classList.add('selected');
+                }
+                
+                // Добавляем лейбл "Только для самовывоза"
+                let disabledLabel = cashPaymentOption.querySelector('.disabled-label');
+                if (!disabledLabel) {
+                    disabledLabel = document.createElement('span');
+                    disabledLabel.className = 'disabled-label';
+                    disabledLabel.textContent = 'Только для самовывоза';
+                    cashPaymentOption.appendChild(disabledLabel);
+                }
             }
-            
-            // Валидация формы
-            const form = document.getElementById('checkoutForm');
-            if (form) {
-                form.addEventListener('submit', function(e) {
-                    const requiredFields = form.querySelectorAll('[required]');
-                    let isValid = true;
-                    
-                    requiredFields.forEach(field => {
-                        if (!field.value.trim()) {
-                            isValid = false;
-                            field.style.borderColor = '#f44336';
-                        } else {
-                            field.style.borderColor = '';
-                        }
-                    });
-                    
-                    if (!isValid) {
-                        e.preventDefault();
-                        alert('Пожалуйста, заполните все обязательные поля, отмеченные звездочкой (*)');
-                    }
-                });
-            }
+        }
+        
+        // Обработка выбора способа доставки
+        deliveryOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                deliveryOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                // Проверяем доступность наличных
+                checkCashPaymentAvailability();
+            });
         });
-    </script>
+        
+        // Обработка выбора способа оплаты (только если не заблокирован)
+        paymentOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const radio = this.querySelector('input[type="radio"]');
+                if (radio.disabled) return; // Не позволяем выбирать заблокированный
+                
+                paymentOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+        
+        // Инициализация при загрузке
+        checkCashPaymentAvailability();
+        
+        // Маска для телефона
+        const phoneInput = document.getElementById('phone');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                let value = this.value.replace(/\D/g, '');
+                if (value.length > 0) {
+                    value = '+7 (' + value;
+                    if (value.length > 7) {
+                        value = value.slice(0, 7) + ') ' + value.slice(7);
+                    }
+                    if (value.length > 12) {
+                        value = value.slice(0, 12) + '-' + value.slice(12);
+                    }
+                    if (value.length > 15) {
+                        value = value.slice(0, 15) + '-' + value.slice(15);
+                    }
+                }
+                this.value = value;
+            });
+            
+            // Добавляем placeholder как подсказку
+            phoneInput.addEventListener('focus', function() {
+                if (!this.value) {
+                    this.value = '+7 (';
+                }
+            });
+            
+            phoneInput.addEventListener('blur', function() {
+                if (this.value === '+7 (') {
+                    this.value = '';
+                }
+            });
+        }
+        
+        // Валидация формы
+        const form = document.getElementById('checkoutForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const requiredFields = form.querySelectorAll('[required]');
+                let isValid = true;
+                
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        isValid = false;
+                        field.style.borderColor = '#f44336';
+                        
+                        // Показываем подсказку
+                        let errorDiv = field.parentElement.querySelector('.error-message');
+                        if (!errorDiv) {
+                            errorDiv = document.createElement('div');
+                            errorDiv.className = 'error-message';
+                            errorDiv.style.color = '#f44336';
+                            errorDiv.style.fontSize = '12px';
+                            errorDiv.style.marginTop = '5px';
+                            errorDiv.textContent = 'Это поле обязательно для заполнения';
+                            field.parentElement.appendChild(errorDiv);
+                        }
+                    } else {
+                        field.style.borderColor = '';
+                        
+                        // Убираем подсказку
+                        const errorDiv = field.parentElement.querySelector('.error-message');
+                        if (errorDiv) {
+                            errorDiv.remove();
+                        }
+                    }
+                });
+                
+                // Проверка телефона
+                const phone = document.getElementById('phone');
+                if (phone && phone.value) {
+                    const phoneRegex = /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/;
+                    if (!phoneRegex.test(phone.value)) {
+                        isValid = false;
+                        phone.style.borderColor = '#f44336';
+                        
+                        let errorDiv = phone.parentElement.querySelector('.error-message');
+                        if (!errorDiv) {
+                            errorDiv = document.createElement('div');
+                            errorDiv.className = 'error-message';
+                            errorDiv.style.color = '#f44336';
+                            errorDiv.style.fontSize = '12px';
+                            errorDiv.style.marginTop = '5px';
+                            errorDiv.textContent = 'Введите телефон в формате +7 (XXX) XXX-XX-XX';
+                            phone.parentElement.appendChild(errorDiv);
+                        }
+                    }
+                }
+                
+                // Проверка email если указан
+                const email = document.getElementById('email');
+                if (email && email.value) {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(email.value)) {
+                        isValid = false;
+                        email.style.borderColor = '#f44336';
+                        
+                        let errorDiv = email.parentElement.querySelector('.error-message');
+                        if (!errorDiv) {
+                            errorDiv = document.createElement('div');
+                            errorDiv.className = 'error-message';
+                            errorDiv.style.color = '#f44336';
+                            errorDiv.style.fontSize = '12px';
+                            errorDiv.style.marginTop = '5px';
+                            errorDiv.textContent = 'Введите корректный email адрес';
+                            email.parentElement.appendChild(errorDiv);
+                        }
+                    }
+                }
+                
+                if (!isValid) {
+                    e.preventDefault();
+                    // Прокручиваем к первой ошибке
+                    const firstError = form.querySelector('[style*="border-color: rgb(244, 67, 54)"]');
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            });
+        }
+        
+        // Автоматическое форматирование ФИО (первая буква заглавная)
+        const fullNameInput = document.getElementById('full_name');
+        if (fullNameInput) {
+            fullNameInput.addEventListener('blur', function() {
+                if (this.value) {
+                    // Приводим каждое слово к виду с заглавной буквы
+                    this.value = this.value
+                        .toLowerCase()
+                        .split(' ')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' ');
+                }
+            });
+        }
+    });
+</script>
 </body>
 </html>
