@@ -208,31 +208,22 @@ function checkout() {
         return;
     }
     
-    const total = window.cartState ? window.cartState.getTotal() : 0;
+    // Создаем форму для отправки данных на сервер
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'checkout.php';
+    form.style.display = 'none';
     
-    if (window.showNotification) {
-        window.showNotification(`Заказ на сумму ${total} ₽ оформлен! Менеджер свяжется с вами в течение 15 минут.`, 'success');
-    }
+    // Добавляем данные корзины
+    const cartInput = document.createElement('input');
+    cartInput.type = 'hidden';
+    cartInput.name = 'cart_items';
+    cartInput.value = JSON.stringify(cart);
+    form.appendChild(cartInput);
     
-    // ПОЛНОСТЬЮ очищаем корзину
-    localStorage.removeItem('cart');
-    
-    // Обновляем все состояния
-    if (window.cartState) {
-        window.cartState.cart = [];
-    }
-    
-    if (window.AppState) {
-        window.AppState.cart = [];
-        window.AppState.cartCount = 0;
-        window.AppState.cartTotal = 0;
-    }
-    
-    // Обновляем отображение
-    updateCartCounter();
-    renderCartItems();
-    
-    setTimeout(() => toggleCart(), 1000);
+    // Добавляем форму на страницу и отправляем
+    document.body.appendChild(form);
+    form.submit();
 }
 
 // Настройка событий
