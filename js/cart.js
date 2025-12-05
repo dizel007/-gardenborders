@@ -93,7 +93,6 @@ function renderCartItems() {
             </div>
             <div class="cart-item-details">
                 <div class="cart-item-title">${item.name}</div>
-                <div class="cart-item-category">${getCategoryName(item.category)}</div>
                 <div class="cart-item-price">${item.price} ₽/шт</div>
                 ${stockMessage}
                 <div class="cart-item-controls">
@@ -330,3 +329,5 @@ window.removeCartItem = removeCartItem;
 window.toggleCart = toggleCart;
 window.checkout = checkout;
 window.updateCartCounter = updateCartCounter;
+
+   

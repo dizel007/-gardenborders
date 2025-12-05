@@ -340,10 +340,7 @@
                     <span>Итого:</span>
                     <span class="total-price">0 ₽</span>
                 </div>
-                <div class="cart-discount">
-                    <i class="fas fa-tag"></i>
-                    <span>Для дизайнеров скидка до 40%</span>
-                </div>
+      
             </div>
             <button class="checkout-btn" onclick="checkout()">
                 <i class="fas fa-check-circle"></i> Оформить заказ
@@ -425,7 +422,6 @@
 
     <!-- Подключение скриптов -->
     <script src="js/main.js"></script>
-    <script src="js/products.js"></script>
     <script src="js/cart-state.js"></script>
     <script src="js/cart.js"></script>
 </body>

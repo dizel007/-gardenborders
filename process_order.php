@@ -134,17 +134,6 @@ function getPaymentMethodName($method) {
     return $methods[$method] ?? $method;
 }
 
-// Функция для получения названия категории
-function getCategoryName($category) {
-    $categories = [
-        'classic' => 'Для грядок',
-        'wave' => 'Для цветников',
-        'stone' => 'Для дорожек',
-        'decor' => 'Декоративные',
-        'pro' => 'PRO серия'
-    ];
-    return $categories[$category] ?? $category;
-}
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -530,7 +519,7 @@ function getCategoryName($category) {
                             <div class="item-details">
                                 <div class="item-name"><?php echo htmlspecialchars($item['name']); ?></div>
                                 <div class="item-meta">
-                                    <span><?php echo getCategoryName($item['category']); ?></span>
+                                    <span><?php echo $item['category']; ?></span>
                                     <span><?php echo $item['quantity']; ?> шт. × <?php echo number_format($item['price'], 0, '', ' '); ?> ₽</span>
                                     <span style="font-weight: 700; color: var(--primary-green);">
                                         <?php echo number_format($item['price'] * $item['quantity'], 0, '', ' '); ?> ₽

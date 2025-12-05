@@ -1,203 +1,8 @@
-<?php
+
+<?php 
 // body_site.php
-require_once "products.php";
+require_once "products.php";?>
 
-// Путь к папке с изображениями
-$imagePath = "images/products/";
-$defaultImage = "default.jpg";
-
-function getCategoryName($category) {
-    $categories = [
-        'classic' => 'Для грядок',
-        'wave' => 'Для цветников',
-        'stone' => 'Для дорожек',
-        'decor' => 'Декоративные',
-        'pro' => 'PRO серия'
-    ];
-    return $categories[$category] ?? $category;
-}
-
-function getColorClass($index) {
-    $colors = ['color-green', 'color-brown', 'color-gray', 'color-terracotta', 'color-sand'];
-    return $colors[$index] ?? 'color-green';
-}
-
-// Функция для проверки существования изображения
-function getProductImage($imageName, $defaultImage, $imagePath) {
-    $fullPath = $imagePath . $imageName;
-    if (file_exists($fullPath)) {
-        return $fullPath;
-    }
-    return $imagePath . $defaultImage;
-}
-
-$category = $_GET['category'] ?? 'all';
-$filteredProducts = $category === 'all' ? $products : array_filter($products, function($product) use ($category) {
-    return $product['category'] === $category;
-});
-?>
-
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Каталог товаров - GardenBorders</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { padding-top: 70px; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        
-        /* Стили для уведомлений */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 20px 25px;
-            border-radius: 12px;
-            color: white;
-            font-weight: 600;
-            z-index: 1100;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            max-width: 400px;
-            transform: translateX(120%);
-            opacity: 0;
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.5s ease;
-        }
-        .notification.show {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        .notification.success {
-            background: linear-gradient(135deg, #2e7d32, #4caf50);
-            border-left: 5px solid #ffeb3b;
-        }
-        .notification.error {
-            background: linear-gradient(135deg, #f44336, #e53935);
-            border-left: 5px solid #ffcdd2;
-        }
-        .notification.info {
-            background: linear-gradient(135deg, #2196f3, #1976d2);
-            border-left: 5px solid #bbdefb;
-        }
-        .notification-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-            padding: 5px;
-            margin-left: auto;
-            opacity: 0.7;
-        }
-        .notification-close:hover {
-            opacity: 1;
-        }
-        
-        /* Анимация для значка корзины */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        
-        /* Анимация появления товаров */
-        .product-card {
-            animation: slideInUp 0.6s ease forwards;
-            opacity: 0;
-        }
-        @keyframes slideInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* Стили для изображений товаров */
-        .product-image {
-            height: 220px;
-            background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .product-image img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            transition: transform 0.3s ease;
-        }
-        
-        .product-image:hover img {
-            transform: scale(1.05);
-        }
-        
-        /* Навигация по изображениям (кружочки) */
-        .image-navigation {
-            position: absolute;
-            bottom: 15px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            padding: 5px;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(5px);
-        }
-        
-        .image-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            border: none;
-            background-color: rgba(0, 0, 0, 0.3);
-            cursor: pointer;
-            padding: 0;
-            transition: all 0.3s ease;
-        }
-        
-        .image-dot:hover {
-            background-color: #2e7d32;
-            transform: scale(1.2);
-        }
-        
-        .image-dot.active {
-            background-color: #2e7d32;
-            transform: scale(1.2);
-        }
-        
-        /* Стили для остатка на складе */
-        .stock-info {
-            font-size: 12px;
-            margin-top: 5px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .stock-low {
-            color: #f44336;
-            font-weight: 600;
-        }
-        
-        .stock-medium {
-            color: #ff9800;
-            font-weight: 600;
-        }
-        
-        .stock-high {
-            color: #4caf50;
-            font-weight: 600;
-        }
-    </style>
-</head>
-<body>
 
     <div class="container">
         <!-- Заголовок -->
@@ -211,22 +16,15 @@ $filteredProducts = $category === 'all' ? $products : array_filter($products, fu
             <a href="?category=all#products" class="filter-btn <?php echo $category === 'all' ? 'active' : ''; ?>">
                 Все бордюры
             </a>
-            <a href="?category=classic#products" class="filter-btn <?php echo $category === 'classic' ? 'active' : ''; ?>">
-                Для грядок
-            </a>
-            <a href="?category=wave#products" class="filter-btn <?php echo $category === 'wave' ? 'active' : ''; ?>">
-                Для цветников
-            </a>
-            <a href="?category=stone#products" class="filter-btn <?php echo $category === 'stone' ? 'active' : ''; ?>">
-                Для дорожек
-            </a>
-            <a href="?category=decor#products" class="filter-btn <?php echo $category === 'decor' ? 'active' : ''; ?>">
-                Декоративные
-            </a>
-            <a href="?category=pro#products" class="filter-btn <?php echo $category === 'pro' ? 'active' : ''; ?>">
-                PRO серия
-            </a>
-        </div>
+
+
+        <?php 
+
+        foreach ($categories as $name_category=>$category_eng)
+            echo "<a href=\"?category={$category_eng}#products\" class=\"filter-btn 
+        <?php echo $category_eng === '{$category_eng}' ? 'active' : ''; ?>\">".$name_category."</a>";
+        ?>
+                   </div>
 
         <!-- Сообщение если товаров нет -->
         <?php if (empty($filteredProducts)): ?>
@@ -277,18 +75,12 @@ $filteredProducts = $category === 'all' ? $products : array_filter($products, fu
                     </div>
                     
                     <div class="product-info">
-                        <div class="product-category"><?php echo getCategoryName($product['category']); ?></div>
+                     <div class="product-category"><?php echo $product['category']; ?></div>
+
                         <div class="product-title"><?php echo htmlspecialchars($product['name']); ?></div>
                         <p class="product-description"><?php echo htmlspecialchars($product['description']); ?></p>
                         
-                        <?php if ($product['colors'] && $product['colors'] > 0): ?>
-                            <div class="product-colors">
-                                <?php for ($i = 0; $i < min($product['colors'], 5); $i++): ?>
-                                    <div class="color-option <?php echo getColorClass($i); ?>"></div>
-                                <?php endfor; ?>
-                            </div>
-                        <?php endif; ?>
-                        
+                                       
                         <div class="product-meta">
                             <div class="product-stock">
                                 <i class="fas fa-<?php echo $product['inStock'] > 0 ? 'check-circle' : 'times-circle'; ?>"></i>
@@ -312,7 +104,7 @@ $filteredProducts = $category === 'all' ? $products : array_filter($products, fu
                         
                         <div class="product-price"><?php echo number_format($product['price'], 0, '', ' '); ?> ₽</div>
                         
-                        <div class="product-features">
+                        <!-- <div class="product-features">
                             <div class="product-feature">
                                 <i class="fas fa-sun"></i>
                                 <span>УФ-защита</span>
@@ -325,7 +117,7 @@ $filteredProducts = $category === 'all' ? $products : array_filter($products, fu
                                 <i class="fas fa-ruler"></i>
                                 <span>Легкий монтаж</span>
                             </div>
-                        </div>
+                        </div> -->
                         
                         <button class="add-to-cart" 
                                 onclick="addToCart(<?php echo $product['id']; ?>, event)" 
@@ -340,8 +132,7 @@ $filteredProducts = $category === 'all' ? $products : array_filter($products, fu
     </div>
 
     <!-- Подключение JS -->
-    <script>
-        // Данные товаров для JS (чтобы корзина работала)
+<script> 
         const productsData = <?php echo json_encode($products); ?>;
         const imagePath = "<?php echo $imagePath; ?>";
         const defaultImage = "<?php echo $imagePath . $defaultImage; ?>";
@@ -354,232 +145,9 @@ $filteredProducts = $category === 'all' ? $products : array_filter($products, fu
             cartTotal: 0
         };
 
-        // Функция смены изображения при наведении на кружок
-        function changeProductImage(productId, imageIndex, imagePath) {
-            const productCard = document.querySelector(`.product-card[data-id="${productId}"]`);
-            if (!productCard) return;
-            
-            const mainImage = productCard.querySelector('.main-product-image');
-            if (!mainImage) return;
-            
-            // Меняем изображение
-            mainImage.src = imagePath;
-            
-            // Обновляем активный кружок
-            const dots = productCard.querySelectorAll('.image-dot');
-            dots.forEach(dot => {
-                dot.classList.remove('active');
-                if (parseInt(dot.dataset.index) === imageIndex) {
-                    dot.classList.add('active');
-                }
-            });
-        }
+</script>
 
-        // Функция для проверки и загрузки изображений
-        function checkImageExists(imageUrl, callback) {
-            const img = new Image();
-            img.onload = function() { callback(true); };
-            img.onerror = function() { callback(false); };
-            img.src = imageUrl;
-        }
+  <script src="js/catalog.js"></script>
 
-        // Функция обновления счетчика корзины
-        function updateCartCounter() {
-            const cartCount = AppState.cart.reduce((total, item) => total + (item.quantity || 0), 0);
-            const counter = document.querySelector('.cart-count');
-            if (counter) counter.textContent = cartCount;
-            
-            // Обновляем глобальное состояние
-            AppState.cartCount = cartCount;
-            AppState.cartTotal = AppState.cart.reduce((total, item) => total + ((item.price || 0) * (item.quantity || 0)), 0);
-        }
 
-        // Функция добавления в корзину с проверкой наличия
-        function addToCart(productId, event) {
-            const product = productsData.find(p => p.id === productId);
-            if (!product) return;
-            
-            // Проверяем наличие на складе ПЕРЕД добавлением
-            if (product.inStock === 0) {
-                showNotification('Товар отсутствует в наличии', 'error');
-                return;
-            }
-            
-            // Получаем текущую корзину
-            let savedCart = JSON.parse(localStorage.getItem('cart')) || [];
-            
-            // Проверяем, сколько уже есть в корзине
-            const existingItemIndex = savedCart.findIndex(item => item.id === productId);
-            const currentInCart = existingItemIndex > -1 ? savedCart[existingItemIndex].quantity : 0;
-            
-            // Проверяем, что не превышаем доступное количество
-            if (currentInCart >= product.inStock) {
-                showNotification(`Нельзя добавить больше товара "${product.name}". В наличии только ${product.inStock} шт.`, 'error');
-                return;
-            }
-            
-            // Анимация кнопки
-            const button = event.target.closest('.add-to-cart');
-            if (button) {
-                const originalHTML = button.innerHTML;
-                const originalBackground = button.style.background;
-                button.style.transform = 'scale(0.95)';
-                button.innerHTML = '<i class="fas fa-check"></i> Добавлено!';
-                button.style.background = 'linear-gradient(135deg, #2e7d32, #4caf50)';
-                
-                setTimeout(() => button.style.transform = 'scale(1)', 200);
-                setTimeout(() => {
-                    button.innerHTML = originalHTML;
-                    button.style.background = originalBackground;
-                }, 1500);
-            }
-            
-            if (existingItemIndex > -1) {
-                // Увеличиваем количество существующего товара
-                savedCart[existingItemIndex].quantity += 1;
-                showNotification(`Товар "${product.name}" добавлен в корзину (${savedCart[existingItemIndex].quantity} шт.)`, 'success');
-            } else {
-                // Добавляем новый товар
-                savedCart.push({
-                    id: product.id,
-                    name: product.name,
-                    price: product.price,
-                    image: product.images ? product.images[0] : 'default.jpg',
-                    category: product.category,
-                    quantity: 1
-                });
-                showNotification(`Товар "${product.name}" добавлен в корзину`, 'success');
-            }
-            
-            // Сохраняем ОБНОВЛЕННУЮ корзину
-            localStorage.setItem('cart', JSON.stringify(savedCart));
-            
-            // Обновляем все состояния
-            AppState.cart = savedCart;
-            AppState.cartCount = savedCart.reduce((total, item) => total + (item.quantity || 0), 0);
-            
-            // Обновляем глобальное состояние если оно существует
-            if (window.cartState) {
-                window.cartState.cart = savedCart;
-            }
-            
-            if (window.AppState) {
-                window.AppState.cart = savedCart;
-                window.AppState.cartCount = AppState.cartCount;
-                window.AppState.cartTotal = AppState.cartTotal;
-                
-                // Вызываем глобальные функции обновления
-                if (window.updateCartTotals) window.updateCartTotals();
-                if (window.updateCartUI) window.updateCartUI();
-                if (window.saveCartToStorage) window.saveCartToStorage();
-            }
-            
-            // Обновляем счетчик
-            updateCartCounter();
-            
-            // Эффект пульсации
-            const cartIcon = document.querySelector('.cart-icon');
-            if (cartIcon) {
-                cartIcon.style.animation = 'pulse 0.5s ease';
-                setTimeout(() => cartIcon.style.animation = '', 500);
-            }
-        }
-
-        // Функция уведомлений
-        function showNotification(message, type = 'success') {
-            const existingNotifications = document.querySelectorAll('.notification.show');
-            existingNotifications.forEach(notification => {
-                notification.classList.remove('show');
-                setTimeout(() => notification.remove(), 300);
-            });
-            
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            
-            let icon = 'fas fa-check-circle';
-            if (type === 'error') icon = 'fas fa-exclamation-circle';
-            if (type === 'info') icon = 'fas fa-info-circle';
-            
-            notification.innerHTML = `
-                <i class="${icon}"></i>
-                <span>${message}</span>
-                <button class="notification-close" onclick="this.parentElement.remove()">&times;</button>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => notification.classList.add('show'), 10);
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => notification.remove(), 500);
-            }, 5000);
-        }
-
-        // Функция для загрузки корзины из localStorage при загрузке страницы
-        function loadCartFromStorage() {
-            const savedCart = localStorage.getItem('cart');
-            if (savedCart) {
-                try {
-                    AppState.cart = JSON.parse(savedCart);
-                    updateCartCounter();
-                } catch (e) {
-                    console.error('Ошибка загрузки корзины:', e);
-                    AppState.cart = [];
-                }
-            }
-        }
-
-        // Инициализация при загрузке страницы
-        document.addEventListener('DOMContentLoaded', function() {
-            // Загружаем корзину
-            loadCartFromStorage();
-            
-            // Для каждого товара проверяем изображения
-            productsData.forEach(product => {
-                if (product.images && product.images.length > 0) {
-                    const productId = product.id;
-                    const dots = document.querySelectorAll(`.product-card[data-id="${productId}"] .image-dot`);
-                    
-                    dots.forEach((dot, index) => {
-                        const imageUrl = dot.dataset.image;
-                        checkImageExists(imageUrl, function(exists) {
-                            if (!exists) {
-                                dot.dataset.image = defaultImage;
-                            }
-                        });
-                    });
-                }
-            });
-            
-            // Анимация товаров
-            const productCards = document.querySelectorAll('.product-card');
-            productCards.forEach((card, index) => {
-                card.style.animationDelay = `${(index + 1) * 0.1}s`;
-            });
-            
-            // Обновляем кнопки "Добавить в корзину" в зависимости от наличия
-            productsData.forEach(product => {
-                if (product.inStock === 0) {
-                    const button = document.querySelector(`.product-card[data-id="${product.id}"] .add-to-cart`);
-                    if (button) {
-                        button.disabled = true;
-                        button.innerHTML = '<i class="fas fa-times-circle"></i> Нет в наличии';
-                        button.style.background = '#ccc';
-                        button.style.cursor = 'not-allowed';
-                    }
-                }
-            });
-        });
-
-        // Делаем функции глобальными
-        window.changeProductImage = changeProductImage;
-        window.addToCart = addToCart;
-        window.showNotification = showNotification;
-        window.updateCartCounter = updateCartCounter;
-        window.loadCartFromStorage = loadCartFromStorage;
-        
-        // Экспортируем данные товаров глобально для использования в cart.js
-        window.productsData = productsData;
-    </script>
-</body>
-</html>
+    

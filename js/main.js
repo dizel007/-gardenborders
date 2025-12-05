@@ -5,17 +5,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Инициализация глобального состояния через cartState
     initAppState();
     
-    // Плавная прокрутка к секциям
-    initSmoothScroll();
+    // // Плавная прокрутка к секциям
+    // initSmoothScroll();
     
     // Обновление года в футере
-    updateFooterYear();
+    // updateFooterYear();
     
     // Инициализация форм
-    initForms();
+    // initForms();
     
     // Инициализация отслеживания прокрутки для активного меню
-    initScrollTracking();
+    // initScrollTracking();
     
     // Подписываемся на изменения корзины
     if (window.cartState) {
