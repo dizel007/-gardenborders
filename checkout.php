@@ -90,7 +90,7 @@ $_SESSION['order_data'] = [
     <title>Оформление заказа - GardenBorders</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/header.css">
-    <link rel="stylesheet" href="styles/responsive.css">
+    <!-- <link rel="stylesheet" href="styles/responsive.css"> -->
     <link rel="stylesheet" href="styles/checkout.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -260,7 +260,7 @@ $_SESSION['order_data'] = [
                             <div class="delivery-time">Сегодня</div>
                         </label>
                         
-                        <!-- <label class="delivery-option">
+                        <label class="delivery-option">
                             <input type="radio" name="delivery_method" value="courier">
                             <div class="delivery-icon">
                                 <i class="fas fa-truck-loading"></i>
@@ -269,20 +269,9 @@ $_SESSION['order_data'] = [
                             <p>Доставка по Москве и области</p>
                             <div class="delivery-price">500 ₽</div>
                             <div class="delivery-time">1-2 дня</div>
-                        </label> -->
+                        </label>
                         
-                        <!-- <label class="delivery-option">
-                            <input type="radio" name="delivery_method" value="russia">
-                            <div class="delivery-icon">
-                                <i class="fas fa-shipping-fast"></i>
-                            </div>
-                            <h3>По России</h3>
-                            <p>Доставка в любой город транспортной компанией</p>
-                            <div class="delivery-price">от 800 ₽</div>
-                            <div class="delivery-time">3-7 дней</div>
-                        </label> -->
-
-                         <label class="delivery-option">
+                        <label class="delivery-option">
                             <input type="radio" name="delivery_method" value="ozon">
                             <div class="delivery-icon">
                                 <i class="fas fa-shipping-fast"></i>
@@ -292,6 +281,13 @@ $_SESSION['order_data'] = [
                             <div class="delivery-price">от 400 ₽</div>
                             <div class="delivery-time">3-7 дней</div>
                         </label>
+                    </div>
+                    
+                    <!-- Поле для адреса доставки (появляется при выборе не самовывоза) -->
+                    <div id="addressSection" class="form-group" style="display: none; margin-top: 25px;">
+                        <label for="delivery_address">Адрес доставки *</label>
+                        <input type="text" id="delivery_address" name="delivery_address" placeholder="Введите полный адрес доставки">
+                        <div class="example-text">Пример: Москва, ул. Ленина, д. 10, кв. 25</div>
                     </div>
                 </div>
                 

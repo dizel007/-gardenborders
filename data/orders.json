@@ -230,5 +230,41 @@
         "total_amount": 3300,
         "order_date": "2025-12-05 12:13:01",
         "order_number": "GB-20251205-0679"
+    },
+    {
+        "customer": {
+            "full_name": "Чсмчсм",
+            "phone": "+7 (847) 856-85-68",
+            "email": ""
+        },
+        "delivery": {
+            "method": "ozon",
+            "address": "чсмчсмчсм"
+        },
+        "payment": {
+            "method": "card"
+        },
+        "comment": "",
+        "cart_items": [
+            {
+                "id": 2,
+                "name": "пластиковый бордюр садовый черный КРОКУС L10000 Н55+30 якорей",
+                "price": 1100,
+                "image": "krokus55_1.jpg",
+                "category": "КРОКУС",
+                "quantity": 2
+            },
+            {
+                "id": 1,
+                "name": "Бордюр садовый пластиковый Длина 10 метров высота 38 мм + 30 якорей",
+                "price": 1000,
+                "image": "krokus38_1.jpg",
+                "category": "КРОКУС",
+                "quantity": 4
+            }
+        ],
+        "total_amount": 6200,
+        "order_date": "2025-12-08 10:06:50",
+        "order_number": "GB-20251208-6272"
     }
 ]

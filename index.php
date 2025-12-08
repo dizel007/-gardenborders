@@ -57,7 +57,7 @@
                 <div class="contact-info">
                     <i class="fas fa-phone-alt"></i>
                     <div>
-                        <span class="phone-number">8 (800) 777-25-25</span>
+                        <span class="phone-number">7 (950) 540-40-24</span>
                         <span class="phone-description">Бесплатно по России</span>
                     </div>
                 </div>
@@ -390,10 +390,11 @@
                 </div>
                 <div class="footer-section">
                     <h4>Контакты</h4>
-                    <p><i class="fas fa-phone-alt"></i> 8 (800) 350-25-25</p>
+                    <p><i class="fas fa-phone-alt"></i>7 (950) 540-40-24</p>
                     <p><i class="fas fa-envelope"></i> info@gardenborders.ru</p>
                     <p><i class="fas fa-map-marker-alt"></i> Москва, ул. Садовая, 42</p>
                     <p><i class="fas fa-clock"></i> Пн-Вс: 8:00-21:00</p>
+                    <p><i class="fas"><a href="requisites.php">Контакты</a></i></p>
                 </div>
                 <div class="footer-section">
                     <h4>Для дизайнеров</h4>

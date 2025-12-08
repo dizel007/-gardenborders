@@ -1,0 +1,445 @@
+/* requisites.css - стили для страницы реквизитов */
+:root {
+    --primary-green: #2e7d32;
+    --secondary-green: #4caf50;
+    --light-green: #e8f5e9;
+    --accent-orange: #ff9800;
+    --dark-orange: #f57c00;
+    --earth-brown: #795548;
+    --sky-blue: #2196f3;
+    --warm-yellow: #ffeb3b;
+    --dark-gray: #333;
+    --light-gray: #f5f5f5;
+    --white: #ffffff;
+    --shadow: 0 4px 12px rgba(0,0,0,0.1);
+    --radius: 12px;
+    --transition: all 0.3s ease;
+}
+
+/* Основные контейнеры */
+.requisites-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.requisites-header {
+    text-align: center;
+    margin-bottom: 50px;
+    padding-bottom: 30px;
+    border-bottom: 2px solid var(--light-green);
+}
+
+.requisites-header h1 {
+    color: var(--primary-green);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    font-size: 36px;
+}
+
+.requisites-header p {
+    color: var(--earth-brown);
+    font-size: 18px;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Основной контент */
+.requisites-content {
+    background: white;
+    border-radius: var(--radius);
+    padding: 40px;
+    box-shadow: var(--shadow);
+}
+
+/* Секции */
+.requisites-section {
+    margin-bottom: 50px;
+}
+
+.requisites-section:last-child {
+    margin-bottom: 0;
+}
+
+.requisites-section h2 {
+    color: var(--primary-green);
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 24px;
+    border-bottom: 2px solid var(--light-green);
+    padding-bottom: 15px;
+}
+
+/* Сетка реквизитов */
+.requisites-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-bottom: 10px;
+}
+
+/* Карточки реквизитов */
+.requisites-card {
+    background: white;
+    border: 2px solid var(--light-green);
+    border-radius: var(--radius);
+    padding: 25px;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    transition: var(--transition);
+    height: 100%;
+}
+
+.requisites-card:hover {
+    border-color: var(--primary-green);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(46, 125, 50, 0.15);
+}
+
+.requisites-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.requisites-icon i {
+    font-size: 25px;
+    color: white;
+}
+
+.requisites-details {
+    flex: 1;
+}
+
+.requisites-details h3 {
+    color: var(--dark-gray);
+    margin-bottom: 10px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.requisites-details p {
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 5px;
+}
+
+.requisites-details .important {
+    color: var(--primary-green);
+    font-weight: 700;
+    font-size: 18px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    letter-spacing: 1px;
+}
+
+.requisites-details .small-text {
+    font-size: 14px;
+    color: #777;
+    margin-top: 5px;
+}
+
+/* Сетка документов */
+.documents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.document-card {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: var(--radius);
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    text-decoration: none;
+    transition: var(--transition);
+    position: relative;
+}
+
+.document-card:hover {
+    border-color: var(--primary-green);
+    background: var(--light-green);
+    transform: translateY(-3px);
+}
+
+.document-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #f44336, #ff9800);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.document-card:nth-child(2) .document-icon {
+    background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+}
+
+.document-card:nth-child(3) .document-icon {
+    background: linear-gradient(135deg, #2196f3, #03a9f4);
+}
+
+.document-icon i {
+    font-size: 22px;
+    color: white;
+}
+
+.document-details {
+    flex: 1;
+}
+
+.document-details h3 {
+    color: var(--dark-gray);
+    margin-bottom: 8px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.document-details p {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.document-download {
+    color: var(--primary-green);
+    font-size: 24px;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: var(--transition);
+}
+
+.document-card:hover .document-download {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Информационная секция */
+.info-section {
+    background: linear-gradient(135deg, var(--light-green), #e1f5fe);
+    border-radius: var(--radius);
+    padding: 30px;
+    display: flex;
+    gap: 25px;
+    align-items: flex-start;
+    margin-top: 40px;
+    border-left: 5px solid var(--primary-green);
+}
+
+.info-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--primary-green);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.info-icon i {
+    font-size: 28px;
+    color: white;
+}
+
+.info-content {
+    flex: 1;
+}
+
+.info-content h3 {
+    color: var(--primary-green);
+    margin-bottom: 15px;
+    font-size: 22px;
+}
+
+.info-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info-content li {
+    color: var(--earth-brown);
+    margin-bottom: 10px;
+    padding-left: 30px;
+    position: relative;
+    line-height: 1.5;
+}
+
+.info-content li:before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--secondary-green);
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.info-content li:last-child {
+    margin-bottom: 0;
+}
+
+/* Подвал */
+footer {
+    margin-top: 60px;
+}
+
+.footer-links {
+    margin-top: 15px;
+}
+
+.footer-links a {
+    display: block;
+    color: var(--dark-gray);
+    text-decoration: none;
+    margin-bottom: 8px;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.footer-links a:hover {
+    color: var(--primary-green);
+    transform: translateX(5px);
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Анимации */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.requisites-card {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+.requisites-card:nth-child(1) { animation-delay: 0.1s; }
+.requisites-card:nth-child(2) { animation-delay: 0.2s; }
+.requisites-card:nth-child(3) { animation-delay: 0.3s; }
+.requisites-card:nth-child(4) { animation-delay: 0.4s; }
+.requisites-card:nth-child(5) { animation-delay: 0.5s; }
+.requisites-card:nth-child(6) { animation-delay: 0.6s; }
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .requisites-container {
+        padding: 20px 15px;
+    }
+    
+    .requisites-content {
+        padding: 25px;
+    }
+    
+    .requisites-header h1 {
+        font-size: 28px;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .requisites-header p {
+        font-size: 16px;
+    }
+    
+    .requisites-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .documents-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .requisites-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .requisites-icon {
+        margin: 0 auto;
+    }
+    
+    .info-section {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .info-icon {
+        margin: 0 auto;
+    }
+    
+    .info-content li {
+        padding-left: 0;
+        text-align: left;
+    }
+    
+    .info-content li:before {
+        position: relative;
+        margin-right: 10px;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .document-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .document-download {
+        opacity: 1;
+        transform: none;
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .requisites-section h2 {
+        font-size: 20px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .requisites-details .important {
+        font-size: 16px;
+    }
+    
+    .document-details h3 {
+        font-size: 16px;
+    }
+}
