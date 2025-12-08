@@ -351,13 +351,13 @@
 /* Навигация по изображениям (кружочки) */
 .image-navigation {
     position: absolute;
-    bottom: -5px;
+    bottom: -0px;
     left: 0;
     right: 0;
     display: flex;
     justify-content: center;
     gap: 40px;
-    padding: 6px;
+    padding: 4px;
     background: rgba(219, 219, 219, 0.7);
     /* backdrop-filter: blur(5px); */
     /* border-top: 1px solid rgba(0, 0, 0, 0.1); */

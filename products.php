@@ -41,7 +41,8 @@ $products = [
         'price' => 700, 
         'category' => 'КАНТРИ',
         'category_eng' => 'kantry',  
-        'images' => ['cantry_80_black_1.jpg', 'cantry_80_black_2.jpg', 'cantry_80_black_3.jpg'], // массив изображений
+        'images' => ['cantry_80_black_1.jpg', 'krokus38_1.jpg', 
+                     'cantry_80_black_1.jpg', 'cantry_80_black_2.jpg', 'krokus38_1.jpg'], // массив изображений
         'description' => 'Садовая бордюрная лента для аккуратных грядок', 
         'inStock' => 17, 
         'colors' => 1, 

@@ -15,6 +15,7 @@
 <body>
     <!-- Показываем ошибки оформления заказа если они есть -->
     <?php
+    $copy_date = date('Y');
     session_start();
     if (isset($_SESSION['checkout_error'])): ?>
         <div class="error-notification">
@@ -36,6 +37,7 @@
             </div>
         </div>
         <?php unset($_SESSION['order_error']); ?>
+        
     <?php endif; ?>
 
     <!-- Шапка сайта - ВЕРХНЯЯ ИНФОРМАЦИОННАЯ ЧАСТЬ -->
@@ -409,7 +411,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2023 GardenBorders. Все права защищены.</p>
+                <p>&copy; <?php echo date('Y');?> GardenBorders. Все права защищены.</p>
                 <div class="payment-methods">
                     <i class="fab fa-cc-visa"></i>
                     <i class="fab fa-cc-mastercard"></i>

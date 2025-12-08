@@ -192,7 +192,6 @@ $_SESSION['order_data'] = [
                                 </div>
                                 <div class="item-details">
                                     <div class="item-name"><?php echo htmlspecialchars($item['name']); ?></div>
-                                    <div class="item-category"><?php echo $item['category']; ?></div>
                                     <div class="stock-info">
                                         <i class="fas fa-warehouse"></i>
                                         <span>На складе: <?php echo $currentStock; ?> шт.</span>
@@ -261,7 +260,7 @@ $_SESSION['order_data'] = [
                             <div class="delivery-time">Сегодня</div>
                         </label>
                         
-                        <label class="delivery-option">
+                        <!-- <label class="delivery-option">
                             <input type="radio" name="delivery_method" value="courier">
                             <div class="delivery-icon">
                                 <i class="fas fa-truck-loading"></i>
@@ -270,9 +269,9 @@ $_SESSION['order_data'] = [
                             <p>Доставка по Москве и области</p>
                             <div class="delivery-price">500 ₽</div>
                             <div class="delivery-time">1-2 дня</div>
-                        </label>
+                        </label> -->
                         
-                        <label class="delivery-option">
+                        <!-- <label class="delivery-option">
                             <input type="radio" name="delivery_method" value="russia">
                             <div class="delivery-icon">
                                 <i class="fas fa-shipping-fast"></i>
@@ -281,7 +280,7 @@ $_SESSION['order_data'] = [
                             <p>Доставка в любой город транспортной компанией</p>
                             <div class="delivery-price">от 800 ₽</div>
                             <div class="delivery-time">3-7 дней</div>
-                        </label>
+                        </label> -->
 
                          <label class="delivery-option">
                             <input type="radio" name="delivery_method" value="ozon">
