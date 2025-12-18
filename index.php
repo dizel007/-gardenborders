@@ -82,11 +82,13 @@ require_once "products.php";
                     </div>
                     <h3>Скидка за ОПТ</h3>
                     <p>Специальные оптовые цены для дизайнеров и дилеров</p>
-            <div class="designer-cta">
-                <button class="partner-btn" onclick="openPartnership()">
-                    <i class="fas fa-handshake"></i> Стать дилером
-                </button>
-            </div>
+            <a href="pages/dealers.php">
+                <div class="designer-cta">
+                    <button class="partner-btn" onclick="openPartnership()">
+                        <i class="fas fa-handshake"></i> Стать дилером
+                    </button>
+                </div>
+             </a>
 
                 </div>
 

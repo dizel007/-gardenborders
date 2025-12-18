@@ -1,7 +1,11 @@
     <!-- Показываем ошибки оформления заказа если они есть -->
-    <?php
-       
-    $copy_date = date('Y');
+<?php
+require_once ("_no_git/secret_info.php");  
+require_once ("_no_git/contact_info.php");  
+
+// Определяем базовый URL
+
+ $copy_date = date('Y');
    
     if (isset($_SESSION['checkout_error'])): ?>
         <div class="error-notification">
@@ -26,29 +30,50 @@
         
     <?php endif; ?>
 
+ 
+<?php
+// Подлючаем стили 
+ require_once "header_styles.php";
+ ?>
 
 
-<!DOCTYPE html>
-<html lang="ru">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GardenBorders | Пластиковые бордюры для ландшафтного дизайна</title>
-    <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/header.css">
-    <link rel="stylesheet" href="styles/products.css">
-    <link rel="stylesheet" href="styles/cart.css">
-    <link rel="stylesheet" href="styles/responsive.css">
-
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-</head>
 <body>
 
 
-    <!-- Шапка сайта - ВЕРХНЯЯ ИНФОРМАЦИОННАЯ ЧАСТЬ -->
+
+
+     <!-- ФИКСИРОВАННАЯ НАВИГАЦИЯ С МЕНЮ И КОРЗИНОЙ -->
+<nav class="main-nav" id="mainNav">
+    <div class="container">
+       
+        <!-- Основное меню (скрывается на маленьких экранах) -->
+        <ul class="nav-list" id="navList">
+            <li><a href="index.php" class="active"><i class="fas fa-home"></i> Главная</a></li>
+            <li><a href="index.php#products"><i class="fas fa-th-large"></i> Каталог</a></li>
+            <li><a href="index.php#design"><i class="fas fa-paint-brush"></i> Дизайн-проекты</a></li>
+            <li><a href="index.php#for-designers"><i class="fas fa-user-tie"></i> Дизайнерам</a></li>
+            <li><a href="index.php#delivery"><i class="fas fa-truck"></i> Доставка</a></li>
+            <li><a href="index.php#contacts"><i class="fas fa-address-book"></i> Контакты</a></li>
+        </ul>
+        
+
+        
+        <div class="header-actions">
+            <button class="consult-btn" onclick="openConsultation()">
+                <i class="fas fa-comments"></i> Консультация
+            </button>
+            <div class="cart-icon" onclick="toggleCart()">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count">0</span>
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+
+<!-- Шапка сайта - ВЕРХНЯЯ ИНФОРМАЦИОННАЯ ЧАСТЬ -->
     <div class="top-header">
         <div class="container">
             <div class="header-left">
@@ -65,7 +90,7 @@
                 <div class="contact-info">
                     <i class="fas fa-phone-alt"></i>
                     <div>
-                        <span class="phone-number">7 (950) 540-40-24</span>
+                        <span class="phone-number"><?php echo $contact_telefon?></span>
                         <!-- <span class="phone-description">Бесплатно по России</span> -->
                     </div>
                 </div>
@@ -79,27 +104,3 @@
             </div>
         </div>
     </div>
-
-
-        <!-- ФИКСИРОВАННАЯ НАВИГАЦИЯ С МЕНЮ И КОРЗИНОЙ -->
-    <nav class="main-nav" id="mainNav">
-        <div class="container">
-            <ul class="nav-list">
-                <li><a href="index.php" class="active"><i class="fas fa-home"></i> Главная</a></li>
-                <li><a href="index.php#products"><i class="fas fa-th-large"></i> Каталог</a></li>
-                <li><a href="index.php#design"><i class="fas fa-paint-brush"></i> Дизайн-проекты</a></li>
-                <li><a href="index.php#for-designers"><i class="fas fa-user-tie"></i> Дизайнерам</a></li>
-                <li><a href="index.php#delivery"><i class="fas fa-truck"></i> Доставка</a></li>
-                <li><a href="index.php#contacts"><i class="fas fa-address-book"></i> Контакты</a></li>
-            </ul>
-            <div class="header-actions">
-                <button class="consult-btn" onclick="openConsultation()">
-                    <i class="fas fa-comments"></i> Консультация
-                </button>
-                <div class="cart-icon" onclick="toggleCart()">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="cart-count">0</span>
-                </div>
-            </div>
-        </div>
-    </nav>

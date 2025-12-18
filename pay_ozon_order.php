@@ -1,5 +1,5 @@
 <?php
-
+require_once 'config.php';
 require_once "_no_git/secret_info.php";
 
 
@@ -59,13 +59,19 @@ $send_json = json_encode($send_data);
 
 
 $result_query_finance_ozon = post_with_data_ozon_finance($send_json, $ozon_link) ;
-// if (isset($result_query_finance_ozon['order']['payLink'])) {
-//     $payLink = $result_query_finance_ozon['order']['payLink'];
-//      header('Location: '.$payLink);
-// }
+if (isset($result_query_finance_ozon['order']['payLink'])) {
+    $payLink = $result_query_finance_ozon['order']['payLink'];
+     header('Location: '.$payLink);
+}
 
 
 print_r($result_query_finance_ozon);
+
+
+
+
+
+
 
 die();
 /* **************************************************************************************************************

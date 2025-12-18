@@ -16,35 +16,8 @@ class CartState {
         this.listeners.forEach(listener => listener(this.cart));
     }
 
-    // Добавление товара
-    // addItem(product, quantity = 1) {
-    //     console.log('Тип images:');
-    //     const existingItemIndex = this.cart.findIndex(item => item.id === product.id);
-    //     console.log('Тип images:', product);
-    //     if (existingItemIndex > -1) {
-    //         // Если товар уже в корзине - увеличиваем количество
-    //         this.cart[existingItemIndex].quantity += quantity;
-    //     } else {
-    //         // Добавляем новый товар
-    //         this.cart.push({
-    //             id: product.id,
-    //             name: product.name,
-    //             price: product.price,
-    //             image: product.images ? product.images[0] : 'default.jpg',
-    //             category: product.category,
-    //             quantity: quantity
-    //         });
-    //     }
-         
-    //     this.save();
-    //     this.notify();
-    //     return true;
-    // }
-
     // Обновление количества
     updateQuantity(productId, change) {
-
-        console.log('sssssssssss');
 
         const itemIndex = this.cart.findIndex(item => item.id === productId);
         

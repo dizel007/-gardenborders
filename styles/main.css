@@ -3,6 +3,7 @@
     --secondary-green: #4caf50;
     --light-green: #e8f5e9;
     --accent-orange: #ff9800;
+    --accent-red: #ff5100;
     --dark-orange: #f57c00;
     --earth-brown: #795548;
     --sky-blue: #2196f3;
@@ -536,4 +537,58 @@ footer {
 .stock-high {
     color: #4caf50;
     font-weight: 600;
+}
+
+
+
+/* Стили для чекбокса согласия */
+.consent-checkbox {
+    margin: 15px 0;
+    padding: 15px;
+    background: var(--light-green);
+    border-radius: var(--radius);
+    border-left: 4px solid var(--primary-green);
+}
+
+.consent-checkbox label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+    color: var(--dark-gray);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.consent-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-top: 3px;
+    flex-shrink: 0;
+    accent-color: var(--primary-green);
+}
+
+.consent-checkbox input[type="checkbox"]:focus {
+    outline: 2px solid var(--primary-green);
+    outline-offset: 2px;
+}
+
+.privacy-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 10px;
+    color: var(--primary-green);
+    font-size: 13px;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.privacy-link:hover {
+    color: var(--secondary-green);
+    text-decoration: underline;
+}
+
+.privacy-link i {
+    font-size: 11px;
 }

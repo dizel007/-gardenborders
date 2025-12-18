@@ -9,6 +9,12 @@ $password="";
 $db="gardenborders_zzz"; //имя  базы данных
 
 
+// Путь к папке с изображениями
+$imagePath = "images/products/";
+$defaultImage = "default.jpg";
+
+
+
       try {  
         $pdo = new PDO('mysql:host='.$host.';dbname='.$db.';charset=utf8', $user, $password);
         $pdo->exec('SET NAMES utf8');
@@ -76,10 +82,26 @@ if (isset($reserev_Article)) {
 // echo "<pre>";
 // print_r($reserev_Article);
 // die();
-// Путь к папке с изображениями
-$imagePath = "images/products/";
-$defaultImage = "default.jpg";
+//**********************************************************************************************
+// Доставем название картинок к товарам из БД
+//**********************************************************************************************/
+    $stmt = $pdo->prepare("SELECT * FROM article_images");
+    $stmt->execute([]);
+    $article_images = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+
+// Делаем ID числом  для JS а то оно не находит товар по ID
+foreach ($products as &$one_product) {
+  foreach ($article_images as $i_item) {
+    if ($i_item['article'] == $one_product['article'])
+      $one_product['images'][] = $i_item['image'];
+  }
+        
+      
+   }
+    // echo "<pre>";
+    // print_r($products);
+    // die();
 
 //**********************************************************************************************
 // Создаем массив категорий из товаров

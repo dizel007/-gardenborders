@@ -104,25 +104,11 @@
                                     ?>
                                 </span>
                             </div>
+                              <div class="product-price"><?php echo number_format($product['price'], 0, '', ' '); ?> ₽</div>
                         </div>
                         
-                        <div class="product-price"><?php echo number_format($product['price'], 0, '', ' '); ?> ₽</div>
-                        
-                        <!-- <div class="product-features">
-                            <div class="product-feature">
-                                <i class="fas fa-sun"></i>
-                                <span>УФ-защита</span>
-                            </div>
-                            <div class="product-feature">
-                                <i class="fas fa-snowflake"></i>
-                                <span>Морозостойкий</span>
-                            </div>
-                            <div class="product-feature">
-                                <i class="fas fa-ruler"></i>
-                                <span>Легкий монтаж</span>
-                            </div>
-                        </div> -->
-                        
+                        <!-- <div class="product-price"><?php echo number_format($product['price'], 0, '', ' '); ?> ₽</div> -->
+                                   
                         <button class="add-to-cart" 
                                 onclick="addToCart(<?php echo $product['id']; ?>, event)" 
                                 <?php echo $product['inStock'] === 0 ? 'disabled' : ''; ?>>

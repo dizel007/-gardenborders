@@ -1,5 +1,5 @@
 <?php
-
+require_once 'config.php';
 // Подключаем товары напрямую
 require_once 'products.php';
 require_once 'includes/database.php';
@@ -167,53 +167,8 @@ ProductDatabase::saveOrder($orderData);
 
 // die();
 require_once "pay_ozon_order.php";
-
-
-
-// РЕЗЕРВИРУЕМ ТОВАРЫ НА СКЛАДЕ
-$reservationSuccess = true;
-$reservationErrors = [];
-
-
-
-
-
-
-
-
-// foreach ($cartItems as $item) {
-//     $reserved = ProductDatabase::reserveProduct($item['id'], $item['quantity']);
-//     if (!$reserved) {
-//         $reservationSuccess = false;
-//         $reservationErrors[] = $item['name'];
-//     }
-// }
-
-// // Если резервирование не удалось - отменяем заказ
-// if (!$reservationSuccess) {
-//     $errorMessage = "Произошла ошибка при резервировании товаров:\n";
-//     foreach ($reservationErrors as $error) {
-//         $errorMessage .= "\n- {$error}";
-//     }
-//     $errorMessage .= "\n\nПожалуйста, повторите попытку оформления заказа.";
-    
-//     $_SESSION['order_error'] = $errorMessage;
-//     header('Location: index.php');
-//     exit;
-// }
-
-
-
-
-
-
-die();
-// Сохраняем номер заказа в сессии
-// $_SESSION['last_order_number'] = $orderData['order_number'];
-
-
+exit();
 ?>
 
 
-<!-- шапка -->
-<?php require_once "header.php";?>
+
