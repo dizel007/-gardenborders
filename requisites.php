@@ -1,61 +1,13 @@
 <?php
+// Подключаем базу данных товаров
 session_start();
-?>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Реквизиты компании - GardenBorders</title>
-    <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/header.css">
-    <link rel="stylesheet" href="styles/responsive.css">
-    <link rel="stylesheet" href="styles/requisites.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-</head>
-<body>
-    <!-- Шапка сайта -->
-    <div class="top-header">
-        <div class="container">
-            <div class="header-left">
-                <div class="logo">
-                    <i class="fas fa-leaf"></i>
-                    <span>Garden<span class="logo-highlight">Borders</span></span>
-                </div>
-                <div class="slogan">
-                    <i class="fas fa-seedling"></i>
-                    Профессиональные решения для вашего сада
-                </div>
-            </div>
-            <div class="header-right">
-                <div class="contact-info">
-                    <i class="fas fa-phone-alt"></i>
-                    <div>
-                        <span class="phone-number">+7 (950) 540-40-24</span>
-                        <span class="phone-description">Бесплатно по России</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Навигация -->
-    <nav class="main-nav">
-        <div class="container">
-            <ul class="nav-list">
-                <li><a href="index.php"><i class="fas fa-home"></i> Главная</a></li>
-                <li><a href="index.php#products"><i class="fas fa-th-large"></i> Каталог</a></li>
-                <li><a href="requisites.php" class="active"><i class="fas fa-file-invoice"></i> Реквизиты</a></li>
-            </ul>
-            <div class="header-actions">
-                <a href="index.php" class="consult-btn">
-                    <i class="fas fa-store"></i> Вернуться в магазин
-                </a>
-            </div>
-        </div>
-    </nav>
+require_once 'includes/database.php';
+require_once 'products.php'; // Подключаем напрямую
 
+?>
+<!-- шапка -->
+<?php require_once "header.php";?>
+    <link rel="stylesheet" href="styles/requisites.css">
     <!-- Основной контент -->
     <main class="requisites-container">
         <div class="requisites-header">
@@ -260,41 +212,10 @@ session_start();
     </main>
 
     <!-- Подвал -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <div class="footer-logo">
-                        <i class="fas fa-leaf"></i>
-                        <span>Garden<span class="logo-highlight">Borders</span></span>
-                    </div>
-                    <p>Профессиональные решения для ландшафтного дизайна</p>
-                    <div class="footer-links">
-                        <a href="requisites.php"><i class="fas fa-file-invoice"></i> Реквизиты компании</a>
-                        <a href="privacy.php"><i class="fas fa-shield-alt"></i> Политика конфиденциальности</a>
-                    </div>
-                </div>
-                <div class="footer-section">
-                    <h4>Контакты</h4>
-                    <p><i class="fas fa-phone-alt"></i> 7 (950) 540-40-24</p>
-                    <p><i class="fas fa-envelope"></i> info@gardenborders.ru</p>
-                    <p><i class="fas fa-map-marker-alt"></i> Москва, ул. Садовая, 42</p>
-                    <p><i class="fas fa-clock"></i> Пн-Пт: 8:00-18:00</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Бухгалтерия</h4>
-                    <p><i class="fas fa-envelope"></i> sellers@gardenborders.ru</p>
-                    <p><i class="fas fa-phone-alt"></i> +7 (950) 540-40-24</p>
-                    <p><i class="fas fa-file-invoice-dollar"></i> ИНН: 860223446952</p>
-                    <p><i class="fas fa-building"></i> ОГРИП: 321665800015831</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; <?php echo date('Y'); ?> GardenBorders. Все права защищены.</p>
-            </div>
-        </div>
-    </footer>
+<?php require_once "footer.php";?>
 
-    <script src="js/requisites.js"></script>
+   <script src="js/checkout.js"></script>
+   <script src="js/requisites.js"></script>
+
 </body>
 </html>

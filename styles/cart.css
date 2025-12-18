@@ -417,9 +417,11 @@
 /* Стили для уведомлений */
 .notification {
     position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 20px 25px;
+    /* top: 90px; */
+    bottom: 40px;
+    /* right: 20px; */
+    left :40px;
+    padding: 15px 15px;
     border-radius: var(--radius);
     color: white;
     font-weight: 600;
@@ -511,7 +513,7 @@
 }
 
 /* Анимация для счетчика посетителей */
-.visitor-counter {
+/* .visitor-counter {
     position: fixed;
     bottom: 20px;
     left: 20px;
@@ -538,7 +540,7 @@
 .visitor-counter i {
     color: var(--warm-yellow);
     font-size: 18px;
-}
+} */
 
 /* Анимация появления товаров */
 @keyframes slideInUp {
@@ -616,4 +618,20 @@
 .cart-item-image i {
     font-size: 40px;
     color: var(--primary-green);
+}
+
+
+@media (max-width: 768px) {
+    /* ... существующий код ... */
+    
+    .cart-sidebar {
+        max-width: 100%;
+        right: -100%; /* Изменяем с -450px на -100% */
+    }
+    
+    .cart-sidebar.open {
+        right: 0;
+    }
+    
+    /* ... остальной код ... */
 }

@@ -196,8 +196,8 @@
 }
 
 .item-quantity {
-    color: #666;
-    font-size: 14px;
+    color: #286820;
+    font-size: 25px;
 }
 
 /* Итоговая сумма */
@@ -617,3 +617,7 @@ textarea.error {
         grid-template-columns: 1fr;
     }
 }
+
+.cart-icon {
+    display: none !important;
+} 

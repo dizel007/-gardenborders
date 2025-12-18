@@ -1,100 +1,11 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GardenBorders | Пластиковые бордюры для ландшафтного дизайна</title>
-    <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/header.css">
-    <link rel="stylesheet" href="styles/products.css">
-    <link rel="stylesheet" href="styles/cart.css">
-    <link rel="stylesheet" href="styles/responsive.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-</head>
-<body>
-    <!-- Показываем ошибки оформления заказа если они есть -->
-    <?php
-    $copy_date = date('Y');
-    session_start();
-    if (isset($_SESSION['checkout_error'])): ?>
-        <div class="error-notification">
-            <div class="error-content">
-                <h3><i class="fas fa-exclamation-triangle"></i> Ошибка оформления заказа</h3>
-                <p><?php echo nl2br(htmlspecialchars($_SESSION['checkout_error'])); ?></p>
-                <button onclick="this.parentElement.parentElement.remove()" class="close-error">×</button>
-            </div>
-        </div>
-        <?php unset($_SESSION['checkout_error']); ?>
-    <?php endif; ?>
 
-    <?php if (isset($_SESSION['order_error'])): ?>
-        <div class="error-notification">
-            <div class="error-content">
-                <h3><i class="fas fa-exclamation-triangle"></i> Ошибка при оформлении заказа</h3>
-                <p><?php echo nl2br(htmlspecialchars($_SESSION['order_error'])); ?></p>
-                <button onclick="this.parentElement.parentElement.remove()" class="close-error">×</button>
-            </div>
-        </div>
-        <?php unset($_SESSION['order_error']); ?>
-        
-    <?php endif; ?>
 
-    <!-- Шапка сайта - ВЕРХНЯЯ ИНФОРМАЦИОННАЯ ЧАСТЬ -->
-    <div class="top-header">
-        <div class="container">
-            <div class="header-left">
-                <div class="logo">
-                    <i class="fas fa-leaf"></i>
-                    <span>Garden<span class="logo-highlight">Borders</span></span>
-                </div>
-                <div class="slogan">
-                    <i class="fas fa-seedling"></i>
-                    Профессиональные решения для вашего сада
-                </div>
-            </div>
-            <div class="header-right">
-                <div class="contact-info">
-                    <i class="fas fa-phone-alt"></i>
-                    <div>
-                        <span class="phone-number">7 (950) 540-40-24</span>
-                        <span class="phone-description">Бесплатно по России</span>
-                    </div>
-                </div>
-                <div class="work-time">
-                    <i class="fas fa-clock"></i>
-                    <div>
-                        <span>Ежедневно 8:00-18:00</span>
-                        <span class="work-description">Консультация специалиста</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- ФИКСИРОВАННАЯ НАВИГАЦИЯ С МЕНЮ И КОРЗИНОЙ -->
-    <nav class="main-nav" id="mainNav">
-        <div class="container">
-            <ul class="nav-list">
-                <li><a href="#" class="active"><i class="fas fa-home"></i> Главная</a></li>
-                <li><a href="#products"><i class="fas fa-th-large"></i> Каталог</a></li>
-                <li><a href="#design"><i class="fas fa-paint-brush"></i> Дизайн-проекты</a></li>
-                <li><a href="#for-designers"><i class="fas fa-user-tie"></i> Дизайнерам</a></li>
-                <li><a href="#delivery"><i class="fas fa-truck"></i> Доставка</a></li>
-                <li><a href="#contacts"><i class="fas fa-address-book"></i> Контакты</a></li>
-            </ul>
-            <div class="header-actions">
-                <button class="consult-btn" onclick="openConsultation()">
-                    <i class="fas fa-comments"></i> Консультация
-                </button>
-                <div class="cart-icon" onclick="toggleCart()">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="cart-count">0</span>
-                </div>
-            </div>
-        </div>
-    </nav>
-    
+<?php 
+session_start();
+require_once "header.php";
+require_once "products.php";
+?>
+   
     <!-- Основное содержимое -->
     <main class="container">
         <!-- Герой-секция -->
@@ -113,8 +24,12 @@
                             <span> Собственное производство</span>
                         </div>
                         <div class="hero-feature">
-                            <i class="fas fa-ruler-combined"></i>
+                            <i class="fa-solid fa-thumbs-up"></i>
                             <span>Любые объемы под заказ</span>
+                        </div>
+                           <div class="hero-feature">
+                            <i class="fas fa-house"></i>
+                            <span>Сделано в РФ</span>
                         </div>
                     </div>
                     <a href="#products" class="cta-button">
@@ -137,7 +52,10 @@
 
         <!-- Каталог товаров -->
         <section id="products" class="products-section">
-         <?php include 'body_site.php'; ?>
+
+              <?php include 'body_site.php'; ?>
+
+              
         </section>
 
 
@@ -148,20 +66,30 @@
                 <p class="section-subtitle">Специальные условия сотрудничества</p>
             </div>
             <div class="designer-benefits">
-                <div class="benefit-card">
-                    <div class="benefit-icon">
-                        <i class="fas fa-percentage"></i>
-                    </div>
-                    <h3>Скидка до 40%</h3>
-                    <p>Специальные оптовые цены для дизайнеров и подрядчиков</p>
-                </div>
-                <div class="benefit-card">
+
+                 <div class="benefit-card">
                     <div class="benefit-icon">
                         <i class="fas fa-file-invoice"></i>
                     </div>
                     <h3>Образцы бесплатно</h3>
                     <p>Предоставляем образцы для презентации клиентам</p>
                 </div>
+
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <h3>Скидка за ОПТ</h3>
+                    <p>Специальные оптовые цены для дизайнеров и дилеров</p>
+            <div class="designer-cta">
+                <button class="partner-btn" onclick="openPartnership()">
+                    <i class="fas fa-handshake"></i> Стать дилером
+                </button>
+            </div>
+
+                </div>
+
                 <div class="benefit-card">
                     <div class="benefit-icon">
                         <i class="fas fa-tools"></i>
@@ -169,19 +97,15 @@
                     <h3>Техническая поддержка</h3>
                     <p>Консультации по монтажу и дизайну от наших специалистов</p>
                 </div>
-                <div class="benefit-card">
+                <!-- <div class="benefit-card">
                     <div class="benefit-icon">
                         <i class="fas fa-puzzle-piece"></i>
                     </div>
                     <h3>Индивидуальные решения</h3>
                     <p>Изготовление бордюров по вашим чертежам и эскизам</p>
-                </div>
+                </div> -->
             </div>
-            <div class="designer-cta">
-                <button class="partner-btn" onclick="openPartnership()">
-                    <i class="fas fa-handshake"></i> Стать партнером
-                </button>
-            </div>
+ 
         </section>
 
 
@@ -193,7 +117,7 @@
                 <p class="section-subtitle">Вдохновляйтесь готовыми решениями</p>
             </div>
             <div class="projects-grid">
-                <div class="project-card">
+                <!-- <div class="project-card">
                     <div class="project-image" style="background-color: #e8f5e9;">
                         <i class="fas fa-carrot"></i>
                     </div>
@@ -202,7 +126,7 @@
                         <p>Идеальные огородные зоны с четкими границами</p>
                         <span class="project-tag">Огород</span>
                     </div>
-                </div>
+                </div> -->
                 <div class="project-card">
                     <div class="project-image" style="background-color: #f3e5f5;">
                         <i class="fas fa-spa"></i>
@@ -255,8 +179,8 @@
                     <div class="delivery-icon">
                         <i class="fas fa-truck-loading"></i>
                     </div>
-                    <h3>Наша доставка</h3>
-                    <p>Доставка по Москве и области нашим транспортом</p>
+                    <h3>Доставка</h3>
+                    <p>Доставка по Москве и области транспортной компанией</p>
                     <span class="delivery-time">1-2 дня</span>
                 </div>
                 <div class="delivery-option">
@@ -264,17 +188,17 @@
                         <i class="fas fa-shipping-fast"></i>
                     </div>
                     <h3>По России</h3>
-                    <p>Доставка в любой город транспортными компаниями</p>
+                    <p>Доставка в ПВЗ любого города<br><b>Ozon логистикой</b></p>
                     <span class="delivery-time">3-7 дней</span>
                 </div>
-                <div class="delivery-option">
+                <!-- <div class="delivery-option">
                     <div class="delivery-icon">
                         <i class="fas fa-tools"></i>
                     </div>
                     <h3>Монтаж</h3>
                     <p>Услуги профессионального монтажа под ключ</p>
                     <span class="delivery-time">По договоренности</span>
-                </div>
+                </div> -->
             </div>
         </section>
 
@@ -320,112 +244,6 @@
             </div>
         </section>
     </main>
-
-    <!-- Корзина покупок -->
-    <div class="cart-overlay" id="cartOverlay"></div>
-    <div class="cart-sidebar" id="cartSidebar">
-        <div class="cart-header">
-            <h3><i class="fas fa-shopping-cart"></i> Корзина</h3>
-            <button class="close-cart" onclick="toggleCart()">&times;</button>
-        </div>
-        <div class="cart-items" id="cartItems">
-            <!-- Товары в корзине будут добавляться здесь -->
-            <div class="empty-cart">
-                <i class="fas fa-shopping-basket"></i>
-                <p>Ваша корзина пуста</p>
-                <a href="#products" class="continue-shopping" onclick="toggleCart()">Продолжить покупки</a>
-            </div>
-        </div>
-        <div class="cart-footer">
-            <div class="cart-summary">
-                <div class="cart-total">
-                    <span>Итого:</span>
-                    <span class="total-price">0 ₽</span>
-                </div>
-      
-            </div>
-            <button class="checkout-btn" onclick="checkout()">
-                <i class="fas fa-check-circle"></i> Оформить заказ
-            </button>
-            <div class="secure-payment">
-                <i class="fas fa-shield-alt"></i>
-                <span>Безопасная оплата</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Форма консультации -->
-    <div class="consultation-modal" id="consultationModal">
-        <div class="modal-content">
-            <button class="close-modal" onclick="closeConsultation()">&times;</button>
-            <h3><i class="fas fa-comments"></i> Бесплатная консультация</h3>
-            <p>Наш специалист поможет подобрать идеальные бордюры для вашего проекта</p>
-            <form id="consultationForm">
-                <input type="text" placeholder="Ваше имя" required>
-                <input type="tel" placeholder="Телефон" required>
-                <textarea placeholder="Опишите ваш проект или задайте вопрос"></textarea>
-                <button type="submit" class="submit-consult">
-                    <i class="fas fa-paper-plane"></i> Отправить заявку
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Подвал -->
-    <footer id="contacts">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <div class="footer-logo">
-                        <i class="fas fa-leaf"></i>
-                        <span>Garden<span class="logo-highlight">Borders</span></span>
-                    </div>
-                    <p>Профессиональные решения для ландшафтного дизайна</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-vk"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                        <a href="#"><i class="fab fa-telegram"></i></a>
-                    </div>
-                </div>
-                <div class="footer-section">
-                    <h4>Контакты</h4>
-                    <p><i class="fas fa-phone-alt"></i>7 (950) 540-40-24</p>
-                    <p><i class="fas fa-envelope"></i> info@gardenborders.ru</p>
-                    <p><i class="fas fa-map-marker-alt"></i> Москва, ул. Садовая, 42</p>
-                    <p><i class="fas fa-clock"></i> Пн-Вс: 8:00-21:00</p>
-                    <p><i class="fas"><a href="requisites.php">Контакты</a></i></p>
-                </div>
-                <div class="footer-section">
-                    <h4>Для дизайнеров</h4>
-                    <a href="#for-designers">Партнерская программа</a>
-                    <a href="#">Каталог для дизайнеров</a>
-                    <a href="#">Техническая документация</a>
-                    <a href="#">Образцы продукции</a>
-                </div>
-                <div class="footer-section">
-                    <h4>Полезное</h4>
-                    <a href="#design">Идеи для сада</a>
-                    <a href="#">Инструкции по монтажу</a>
-                    <a href="#">Уход за бордюрами</a>
-                    <a href="#delivery">Доставка и оплата</a>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; <?php echo date('Y');?> GardenBorders. Все права защищены.</p>
-                <div class="payment-methods">
-                    <i class="fab fa-cc-visa"></i>
-                    <i class="fab fa-cc-mastercard"></i>
-                    <i class="fab fa-cc-mir"></i>
-                    <i class="fas fa-money-bill-wave"></i>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Подключение скриптов -->
-    <script src="js/main.js"></script>
-    <script src="js/cart-state.js"></script>
-    <script src="js/cart.js"></script>
+<?php require_once "footer.php";?>
 </body>
 </html>

@@ -1,7 +1,11 @@
 
 <?php 
 // body_site.php
-require_once "products.php";?>
+
+
+
+
+?>
 
 
     <div class="container">

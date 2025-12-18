@@ -60,9 +60,9 @@ function closeConsultation() {
     document.getElementById('consultationModal').style.display = 'none';
 }
 
-function openPartnership() {
-    showNotification('Спасибо за интерес к партнерской программе! Наш менеджер свяжется с вами в течение 2 часов.', 'success');
-}
+// function openPartnership() {
+//     showNotification('Спасибо за интерес к партнерской программе! Наш менеджер свяжется с вами в течение 2 часов.', 'success');
+// }
 
 // Эффект пульсации для значка корзины
 function pulseCartIcon() {

@@ -118,6 +118,7 @@ function renderCartItems() {
 function updateCartItemQuantity(productId, change) {
     // Находим товар в данных продуктов
     const product = window.productsData ? window.productsData.find(p => p.id === productId) : null;
+    console.log(product);
     
     // Проверяем наличие на складе при увеличении
     if (change > 0 && product) {

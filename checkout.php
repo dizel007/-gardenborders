@@ -1,7 +1,5 @@
 <?php
-// checkout.php
-session_start();
-
+ session_start();
 // Подключаем базу данных товаров
 require_once 'includes/database.php';
 require_once 'products.php'; // Подключаем напрямую
@@ -81,60 +79,10 @@ $_SESSION['order_data'] = [
 ];
 ?>
 
-<!-- Остальной HTML код остается без изменений -->
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Оформление заказа - GardenBorders</title>
-    <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/header.css">
-    <!-- <link rel="stylesheet" href="styles/responsive.css"> -->
-    <link rel="stylesheet" href="styles/checkout.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-</head>
-<body>
-    <!-- Шапка сайта -->
-    <div class="top-header">
-        <div class="container">
-            <div class="header-left">
-                <div class="logo">
-                    <i class="fas fa-leaf"></i>
-                    <span>Garden<span class="logo-highlight">Borders</span></span>
-                </div>
-                <div class="slogan">
-                    <i class="fas fa-seedling"></i>
-                    Профессиональные решения для вашего сада
-                </div>
-            </div>
-            <div class="header-right">
-                <div class="contact-info">
-                    <i class="fas fa-phone-alt"></i>
-                    <div>
-                        <span class="phone-number">8 (800) 777-25-25</span>
-                        <span class="phone-description">Бесплатно по России</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Навигация -->
-    <nav class="main-nav">
-        <div class="container">
-            <ul class="nav-list">
-                <li><a href="index.php"><i class="fas fa-home"></i> Главная</a></li>
-                <li><a href="index.php#products"><i class="fas fa-th-large"></i> Каталог</a></li>
-            </ul>
-            <div class="header-actions">
-                <a href="index.php" class="consult-btn">
-                    <i class="fas fa-arrow-left"></i> Вернуться в магазин
-                </a>
-            </div>
-        </div>
-    </nav>
+<!-- шапка -->
+<?php require_once "header.php";?>
+
+<link rel="stylesheet" href="styles/checkout.css">
 
     <!-- Основной контент -->
     <main class="checkout-container">
@@ -193,17 +141,23 @@ $_SESSION['order_data'] = [
                                 <div class="item-details">
                                     <div class="item-name"><?php echo htmlspecialchars($item['name']); ?></div>
                                     <div class="stock-info">
-                                        <i class="fas fa-warehouse"></i>
-                                        <span>На складе: <?php echo $currentStock; ?> шт.</span>
+                                        <!-- <i class="fas fa-warehouse"></i> -->
+                                        <!-- <span>На складе: <?php echo $currentStock; ?> шт.</span> -->
+
                                         <?php if ($item['quantity'] > $currentStock): ?>
                                             <span style="color: #f44336; font-size: 12px; margin-left: 10px;">
                                                 <i class="fas fa-exclamation-triangle"></i> Запрошено больше чем есть в наличии
                                             </span>
                                         <?php endif; ?>
+
                                     </div>
                                     <div class="item-meta">
+                                        <div>
                                         <div class="item-price"><?php echo number_format($item['price'], 0, '', ' '); ?> ₽</div>
-                                        <div class="item-quantity">Количество: <?php echo $item['quantity']; ?> шт.</div>
+                                        <div class="item-price"> Количество <?php echo $item['quantity']; ?> шт.</div>
+                                        </div>
+                                        <?php $item['summa_item'] = $item['price'] * $item['quantity']?>
+                                        <div class="item-quantity"> <?php echo $item['summa_item']; ?> ₽ </div>
                                     </div>
                                 </div>
                             </div>
@@ -255,7 +209,7 @@ $_SESSION['order_data'] = [
                                 <i class="fas fa-store-alt"></i>
                             </div>
                             <h3>Самовывоз</h3>
-                            <p>Заберите заказ с нашего склада в Москве</p>
+                            <p>Заберите заказ с нашего склада г.Москва, п.Московский, д.Саларьево, вл.3, стр.1</p>
                             <div class="delivery-price">Бесплатно</div>
                             <div class="delivery-time">Сегодня</div>
                         </label>
@@ -335,29 +289,7 @@ $_SESSION['order_data'] = [
         </form>
     </main>
 
-    <!-- Подвал -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <div class="footer-logo">
-                        <i class="fas fa-leaf"></i>
-                        <span>Garden<span class="logo-highlight">Borders</span></span>
-                    </div>
-                    <p>Профессиональные решения для ландшафтного дизайна</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Контакты</h4>
-                    <p><i class="fas fa-phone-alt"></i> 8 (800) 350-25-25</p>
-                    <p><i class="fas fa-envelope"></i> info@gardenborders.ru</p>
-                    <p><i class="fas fa-map-marker-alt"></i> Москва, ул. Садовая, 42</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; <?php echo date('Y'); ?> GardenBorders. Все права защищены.</p>
-            </div>
-        </div>
-    </footer>
+<?php require_once "footer.php";?>
 
    <script src="js/checkout.js"></script>
 </body>

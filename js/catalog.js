@@ -1,4 +1,5 @@
 
+
         // Функция смены изображения при наведении на кружок
         function changeProductImage(productId, imageIndex, imagePath) {
             const productCard = document.querySelector(`.product-card[data-id="${productId}"]`);
@@ -41,7 +42,14 @@
 
         // Функция добавления в корзину с проверкой наличия
         function addToCart(productId, event) {
+
+            // console.log('productId = ', productId);
+
+  console.log('productsData = ', productsData);
             const product = productsData.find(p => p.id === productId);
+            
+            // console.log('productsData = ', product);
+
             if (!product) return;
             
             // Проверяем наличие на складе ПЕРЕД добавлением
