@@ -1,11 +1,12 @@
 <?php
 require_once ("../_no_git/contact_info.php");  
 require_once "../config.php";
-require_once "../_no_git/secret_info.php";  
+require_once "../_no_git/secret_info.php"; 
+$mail_path = "../";
 require_once "../mailer/send_mail.php";
 
 session_start();
-    $content = "=== КОНСУЛЬТАЦИЯ  ===\n\n";
+    $content = "=== КОНСУЛЬТАЦИЯ  ===<br>";
     foreach ($_POST as $key => $value) {
         $label = [
             'name' => 'ФИО',
@@ -16,7 +17,7 @@ session_start();
             
         ][$key] ?? $key;
         
-        $content .= "$label: $value\n\n";
+        $content .= "$label: $value <br>";
     }
 
 

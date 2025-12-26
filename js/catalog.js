@@ -1,7 +1,7 @@
 
 
-        // Функция смены изображения при наведении на кружок
-        function changeProductImage(productId, imageIndex, imagePath) {
+// Функция смены изображения при наведении на кружок
+function changeProductImage(productId, imageIndex, imagePath) {
             const productCard = document.querySelector(`.product-card[data-id="${productId}"]`);
             if (!productCard) return;
             
@@ -19,18 +19,18 @@
                     dot.classList.add('active');
                 }
             });
-        }
+}
 
-        // Функция для проверки и загрузки изображений
-        function checkImageExists(imageUrl, callback) {
+// Функция для проверки и загрузки изображений
+function checkImageExists(imageUrl, callback) {
             const img = new Image();
             img.onload = function() { callback(true); };
             img.onerror = function() { callback(false); };
             img.src = imageUrl;
-        }
+}
 
-        // Функция обновления счетчика корзины
-        function updateCartCounter() {
+// Функция обновления счетчика корзины
+function updateCartCounter() {
             const cartCount = AppState.cart.reduce((total, item) => total + (item.quantity || 0), 0);
             const counter = document.querySelector('.cart-count');
             if (counter) counter.textContent = cartCount;
@@ -38,17 +38,17 @@
             // Обновляем глобальное состояние
             AppState.cartCount = cartCount;
             AppState.cartTotal = AppState.cart.reduce((total, item) => total + ((item.price || 0) * (item.quantity || 0)), 0);
-        }
+}
 
-        // Функция добавления в корзину с проверкой наличия
-        function addToCart(productId, event) {
+// Функция добавления в корзину с проверкой наличия
+function addToCart(productId, event) {
 
-            // console.log('productId = ', productId);
+            console.log('productId = ', productId);
 
-  console.log('productsData = ', productsData);
+//   console.log('productsData = ', productsData);
             const product = productsData.find(p => p.id === productId);
-            
-            // console.log('productsData = ', product);
+
+            console.log('productsData = ', productsData);
 
             if (!product) return;
             
@@ -136,10 +136,12 @@
                 cartIcon.style.animation = 'pulse 0.5s ease';
                 setTimeout(() => cartIcon.style.animation = '', 500);
             }
-        }
+}
 
-        // Функция уведомлений
-        function showNotification(message, type = 'success') {
+//*****************************************************************************
+// Функция уведомлений
+//*****************************************************************************
+function showNotification(message, type = 'success') {
             const existingNotifications = document.querySelectorAll('.notification.show');
             existingNotifications.forEach(notification => {
                 notification.classList.remove('show');
@@ -166,10 +168,12 @@
                 notification.classList.remove('show');
                 setTimeout(() => notification.remove(), 500);
             }, 5000);
-        }
+}
+//*****************************************************************************
+// Функция для загрузки корзины из localStorage при загрузке страницы
+//*****************************************************************************
 
-        // Функция для загрузки корзины из localStorage при загрузке страницы
-        function loadCartFromStorage() {
+function loadCartFromStorage() {
             const savedCart = localStorage.getItem('cart');
             if (savedCart) {
                 try {
@@ -180,17 +184,18 @@
                     AppState.cart = [];
                 }
             }
-        }
+}
 
-        // Инициализация при загрузке страницы
-        document.addEventListener('DOMContentLoaded', function() {
-            // Загружаем корзину
-            loadCartFromStorage();
-            
-            // Для каждого товара проверяем изображения
-            productsData.forEach(product => {
-                if (product.images && product.images.length > 0) {
-                    const productId = product.id;
+//*****************************************************************************
+// Инициализация при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+// Загружаем корзину
+ loadCartFromStorage();
+        
+// Для каждого товара проверяем изображения
+productsData.forEach(product => {
+        if (product.images && product.images.length > 0) {
+               const productId = product.id;
                     const dots = document.querySelectorAll(`.product-card[data-id="${productId}"] .image-dot`);
                     
                     dots.forEach((dot, index) => {
@@ -222,15 +227,19 @@
                     }
                 }
             });
-        });
+    });
 
-        // Делаем функции глобальными
+//*****************************************************************************
+// Делаем функции глобальными
+//*****************************************************************************
         window.changeProductImage = changeProductImage;
         window.addToCart = addToCart;
         window.showNotification = showNotification;
         window.updateCartCounter = updateCartCounter;
         window.loadCartFromStorage = loadCartFromStorage;
-        
-        // Экспортируем данные товаров глобально для использования в cart.js
+
+//*****************************************************************************
+// Экспортируем данные товаров глобально для использования в cart.js
         window.productsData = productsData;
+        // console.log(productsData);
     

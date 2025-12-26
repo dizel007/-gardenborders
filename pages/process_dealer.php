@@ -1,6 +1,7 @@
 <?php
 require_once "../config.php";
 require_once "../_no_git/secret_info.php";  
+$mail_path = "../"; 
 require_once "../mailer/send_mail.php";
 
 

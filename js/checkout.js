@@ -79,19 +79,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Обработка выбора способа доставки
-    deliveryOptions.forEach(option => {
-        option.addEventListener('click', function() {
-            deliveryOptions.forEach(opt => opt.classList.remove('selected'));
-            this.classList.add('selected');
-            
-            // Проверяем доступность наличных
-            checkCashPaymentAvailability();
-            
-            // Показываем/скрываем поле адреса
-            toggleAddressField();
-        });
+// Обработка выбора способа доставки
+deliveryOptions.forEach(option => {
+    option.addEventListener('click', function() {
+        // Проверяем, не заблокирована ли опция
+        if (this.classList.contains('disabled')) return;
+        
+        deliveryOptions.forEach(opt => opt.classList.remove('selected'));
+        this.classList.add('selected');
+        
+        // Проверяем доступность наличных
+        checkCashPaymentAvailability();
+        
+        // Показываем/скрываем поле адреса
+        toggleAddressField();
     });
+});
     
     // Обработка выбора способа оплаты (только если не заблокирован)
     paymentOptions.forEach(option => {
@@ -291,3 +294,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+

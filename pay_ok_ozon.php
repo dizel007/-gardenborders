@@ -1,7 +1,33 @@
 <?php
+require_once "config.php";
+$mail_path = ""; 
+require_once "mailer/send_mail.php";
+require_once ("_no_git/secret_info.php");  
+session_start();
+
+/// проверяем номер заказа из сессии и из ссылки озона (GET параметр)
+/// если все хорошо, то продолжаем работать иначе помираем;
+$session_order_number = $_SESSION['order_number'];
 $order_number = $_GET['order_number'];
+if ($session_order_number != $order_number)  {
+    die('Ошибка в сессии');
+}
+
+
+
+/************************************************************************************************/
+    try {  
+       $pdo = new PDO('mysql:host='.$host.';dbname='.$db.';charset=utf8', $user, $password);
+       $pdo->exec('SET NAMES utf8');
+       $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $e) {
+          print "Has errors: " . $e->getMessage();  die();
+        }
+
+
 try {
-$orderData_t = json_decode(file_get_contents('data/orders/'.$order_number.".json"), true);
+$fileName_json_order = 'data/orders/'.$order_number.".json";
+$orderData_t = json_decode(file_get_contents($fileName_json_order), true);
 $orderData = $orderData_t[0];
 } catch (Exception $e) {
     echo "Ошибка: " . $e->getMessage();
@@ -11,19 +37,80 @@ $orderData = $orderData_t[0];
 //**********************************************************************************************
 // Удаляем строки в резерве остатков
 //**********************************************************************************************/
+$reservStockId_data_for_delete = $orderData['reservStockId_data_for_delete'];
+foreach ($reservStockId_data_for_delete as $id_for_delete_reserv) {
+    $stmt = $pdo->prepare("DELETE FROM reserv_stocks WHERE `id`  = :id_for_delete_reserv");
+    $stmt->execute(['id_for_delete_reserv' => $id_for_delete_reserv]);
+}
+//**********************************************************************************************
+// Обновляем остатки в таблице STOCK
+//**********************************************************************************************/
 
-// Очищаем корзину из сессии
-unset($_SESSION['order_data']);
+if (!isset($orderData_t[0]['Stock_update'])) {
+    $stmt = $pdo->prepare("SELECT * FROM stocks");
+    $stmt->execute([]);
+    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+foreach ($orderData['cart_items'] as $tovar) {
+     $stocks_for_delete[$tovar['article']] = $tovar['quantity'];
+   }
+
+foreach ($products as $product) {
+    if (isset($stocks_for_delete[$product['article']])) {
+    $stocks_for_del_new[$product['article']] = $product['inStock'] - @$stocks_for_delete[$product['article']];
+     if ($stocks_for_del_new[$product['article']] < 0) {
+        $stocks_for_del_new[$product['article']] = 0;
+     }
+    }
+}
+// 
+foreach ($stocks_for_del_new as $article => $quantity) {
+$stmt = $pdo->prepare("UPDATE stocks SET inStock = :quantity WHERE article = :article");
+$stmt->execute([
+    'quantity' => $quantity,
+    'article' => $article
+]);
+usleep(1000);
+}
+
+/// ставим признак в файл заказа, что остатки уже обновили
+$orderData_t[0]['Stock_update'] = true;
+file_put_contents($fileName_json_order, json_encode($orderData_t, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+}
+//
+
+// вносим признак оплаты закза
+$stmt = $pdo->prepare("UPDATE orders SET paid = 1 WHERE order_number = :extId");
+$stmt->execute(['extId' => $orderData_t[0]['order_number']]);
+
+
 
 // echo "<pre>";
-print_r($orderData);
+// print_r($orderData_t);
+
+// print_r($_SESSION);
+/********************************************************************************************************
+ *  Отправляем письмо о заказе
+ *******************************************************************************************************/
+ $content = "=== ПРИШЕЛ ЗАКАЗ ===<br>";
+ $content .= 'Номер заказа: '.$orderData['order_number']."<br>";
+ $content .= 'Дата заказа: '.$orderData['order_date']."<br>";
+ $content .= 'метод платежа : '.($orderData['payment']['method'])."<br>";
+ $content .= 'метод Доставки : '.($orderData['delivery']['method'])."<br>";
+$content .=       
+     
+send_many_emails($EMAIL_for_letters, 'ПРИШЕЛ ЗАКАЗ',  $content, $mail_for_send_letter, $mail_pass);
 
 
+// Очищаем корзину из сессии
+if (isset($_SESSION['order_data'])) {unset($_SESSION['order_data']);}
 
-
+require_once "header_styles.php";
 ?>
+
+
+
 <!-- шапка -->
-<?php require_once "header.php";?>
 <link rel="stylesheet" href="styles/okpaid.css">
     <!-- Основной контент -->
     <main class="confirmation-container">
@@ -101,7 +188,7 @@ print_r($orderData);
                 
                 <div class="order-summary">
                     <div class="summary-item">
-                        <span>Товары (<?php echo count($orderData['cart_items']); ?> позиций):</span>
+                        <span>Товары  :</span>
                         <span><?php echo number_format($orderData['total_amount'], 0, '', ' '); ?> ₽</span>
                     </div>
                     <div class="summary-item">
@@ -172,8 +259,6 @@ print_r($orderData);
             </button>
         </div>
     </main>
-
-<?php require_once "footer.php";?>
 
     <script>
         // Очищаем корзину в localStorage после оформления заказа

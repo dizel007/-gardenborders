@@ -1,5 +1,7 @@
 <?php
-require_once 'config.php';
+// require_once 'config.php';
+// блокируем вывод JS кода в product.php
+$do_not_start_js_code_in_product_php = 1;
 // Подключаем товары напрямую
 require_once 'products.php';
 require_once 'includes/database.php';
@@ -18,6 +20,9 @@ try {
     echo "Ошибка: " . $e->getMessage();
 }
 
+
+
+
 // Проверяем, есть ли данные в сессии
 if (!isset($_SESSION['order_data'])) {
         header('Location: index.php');
@@ -26,6 +31,8 @@ if (!isset($_SESSION['order_data'])) {
 
 // Проверяем наличие товаров еще раз перед оформлением
 $cartItems = $_SESSION['order_data']['cart_items'];
+
+
 $allAvailable = true;
 $unavailableItems = [];
 
@@ -55,7 +62,7 @@ foreach ($cartItems as &$item) {
 
 // Если товары стали недоступны - показываем ошибку
 if (!$allAvailable) {
-    $errorMessage = "К сожалению, пока вы оформляли заказ, некоторые товары закончились:\n";
+    $errorMessage = "К сожалению, пока вы оформляли заказ, некоторые товары закончились:";
     foreach ($unavailableItems as $item) {
         if ($item['available'] == 0) {
             $errorMessage .= "\n- {$item['name']}: товар не найден";
@@ -63,10 +70,10 @@ if (!$allAvailable) {
             $errorMessage .= "\n- {$item['name']}: запрошено {$item['requested']} шт., в наличии осталось {$item['available']} шт.";
         }
     }
-    $errorMessage .= "\n\nПожалуйста, вернитесь в корзину и измените заказ.";
+    $errorMessage .= "\nПожалуйста, вернитесь в корзину и измените заказ.";
     
     $_SESSION['order_error'] = $errorMessage;
-       die('NOT SECCION');
+    //    die('NOT SECCION');
        header('Location: index.php');
     exit;
 }
@@ -92,12 +99,14 @@ $orderData = [
     'order_number' => 'GB-' . date('Ymd') . '-' . str_pad($small_order_number , 4, '0', STR_PAD_LEFT)
 ];
 
+// Сохраняем данные заказа в сессию
+$_SESSION['order_number'] = $orderData['order_number'];
 
 /***************************************************************************************************************
 *********  Создаем заказ в БД
 ************************************************************************************************************** */
-echo "<pre>";
-print_r($orderData);
+// echo "<pre>";
+// print_r($orderData);
 try {
     $sql = "INSERT INTO orders(order_number, order_date, total_amount, paid, small_order_number) 
                      VALUES ( :order_number, :order_date, :total_amount, :paid, :small_order_number)";
@@ -117,7 +126,7 @@ try {
     // Выполнение запроса
     $stmt->execute($data);
     
-    echo "Заказ успешно добавлен. ID: " . $pdo->lastInsertId();
+    // echo "Заказ успешно добавлен. ID: " . $pdo->lastInsertId();
     
 } catch(PDOException $e) {
     echo "Ошибка: " . $e->getMessage();
@@ -152,7 +161,7 @@ foreach ($orderData['cart_items'] as $cart_items) {
     // Выполнение запроса
     $stmt->execute($data);
     $reservStockId_data_for_delete[] = $pdo->lastInsertId();
-    echo "Записали в таблицу резерва: " . $pdo->lastInsertId() . " <br>";
+    // echo "Записали в таблицу резерва: " . $pdo->lastInsertId() . " <br>";
    
 } catch(PDOException $e) {
     echo "Ошибка: " . $e->getMessage();
@@ -165,8 +174,12 @@ foreach ($orderData['cart_items'] as $cart_items) {
 // Сохраняем заказ в папку на сайте 
 ProductDatabase::saveOrder($orderData);
 
-// die();
-require_once "pay_ozon_order.php";
+if ($_POST['payment_method'] != 'cash') {
+    require_once "pay_ozon_order.php";
+} else {
+    $successUrl = "pay_ok_ozon.php?order_number=".$orderData['order_number'];
+    header('Location: '.$successUrl);
+}
 exit();
 ?>
 

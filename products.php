@@ -1,12 +1,8 @@
 <?php
+require_once "config.php";
 // Установка часового пояса для всего приложения
 ini_set('date.timezone', 'Europe/Moscow');
 date_default_timezone_set('Europe/Moscow');
-
-$host="localhost";//имя  сервера
-$user="root";//имя пользователя
-$password=""; 
-$db="gardenborders_zzz"; //имя  базы данных
 
 
 // Путь к папке с изображениями
@@ -29,7 +25,6 @@ $defaultImage = "default.jpg";
 //**********************************************************************************************
 // Доставем все товары из БД
 //**********************************************************************************************/
-
     $stmt = $pdo->prepare("SELECT * FROM stocks");
     $stmt->execute([]);
     $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -37,8 +32,59 @@ $defaultImage = "default.jpg";
 // Делаем ID числом  для JS а то оно не находит товар по ID
 foreach ($products as &$one_product) {
         $one_product['id'] = (int)$one_product['id'];
+        $one_product['inStock'] = (int)$one_product['inStock'];
+        $one_product['length'] = 1000;
+        $one_product['width'] = 1000;
+        $one_product['height'] = 1000;
+
+
       //  $one_product['images'] = ['krokus55_1.jpg', 'krokus55_2.jpg', 'krokus55_3.jpg'];
    }
+
+//**********************************************************************************************
+// Доставем название картинок к товарам из БД
+//**********************************************************************************************/
+    $stmt = $pdo->prepare("SELECT * FROM article_images");
+    $stmt->execute([]);
+    $article_images = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+// Делаем ID числом  для JS а то оно не находит товар по ID
+foreach ($products as &$one_product) {
+  foreach ($article_images as $i_item) {
+    if ($i_item['article'] == $one_product['article'])
+      $one_product['images'][] = $i_item['article'].$i_item['image'].".jpg";
+  }
+        
+      
+   }
+
+ ?>
+ <!-- Передаем в JS товары и основные характеристики -->
+ <?php if(!isset($do_not_start_js_code_in_product_php)):?>
+<script> 
+        const productsData = <?php echo json_encode($products); ?>;
+        const imagePath = "<?php echo $imagePath; ?>";
+        const defaultImage = "<?php echo $imagePath . $defaultImage; ?>";
+        
+        // Инициализация глобального состояния корзины
+        let AppState = {
+            products: productsData,
+            cart: JSON.parse(localStorage.getItem('cart')) || [],
+            cartCount: 0,
+            cartTotal: 0
+        };
+
+</script>
+<?php endif; ?>
+
+<?php
+
+//    echo "<pre>";
+// print_r($products);
+
+// die();
+
 
 //**********************************************************************************************
 // Достаем зарезервированные товары  ЖДо этого удаляем старые записи
@@ -61,11 +107,10 @@ foreach ($reserev_Stocks as $one_stock) {
   $reserev_Article[$one_stock['article']] = @$reserev_Article[$one_stock['article']] + $one_stock['quantity'];
 }
 
-
 // echo "<pre>";
 // print_r($reserev_Stocks);
-
 // die();
+
 //**********************************************************************************************
 // Формируем остатки без учета зарезервированных товаров
 //**********************************************************************************************/
@@ -79,28 +124,8 @@ if (isset($reserev_Article)) {
     } 
   }
 }
-// echo "<pre>";
-// print_r($reserev_Article);
-// die();
-//**********************************************************************************************
-// Доставем название картинок к товарам из БД
-//**********************************************************************************************/
-    $stmt = $pdo->prepare("SELECT * FROM article_images");
-    $stmt->execute([]);
-    $article_images = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-
-// Делаем ID числом  для JS а то оно не находит товар по ID
-foreach ($products as &$one_product) {
-  foreach ($article_images as $i_item) {
-    if ($i_item['article'] == $one_product['article'])
-      $one_product['images'][] = $i_item['image'];
-  }
-        
-      
-   }
     // echo "<pre>";
-    // print_r($products);
+    // print_r($products[0]);
     // die();
 
 //**********************************************************************************************
@@ -119,7 +144,7 @@ foreach ($products as &$one_product) {
      $categories = array_unique($categories);
 
 //**********************************************************************************************
-// Находим выбпраннную категорию после смены категории
+// Находим выбпраннную категорию после смены категории и фильтруем товары для вывода
 //**********************************************************************************************
 
 $category = $_GET['category'] ?? 'all';

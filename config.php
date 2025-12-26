@@ -13,4 +13,18 @@ $main_path = $base_url.$TEST ;
 $EMAIL_for_letters = 'dizel007@yandex.ru';
 
 
+$host="localhost";//имя  сервера
+$user="root";//имя пользователя
+$password=""; 
+$db="gardenborders_zzz"; //имя  базы данных
+
+
+// Настройка доступности способов доставки
+$delivery_available = [
+    'pickup' => true,     // Самовывоз - доступен
+    'courier' => false,   // Курьерская доставка - недоступна
+    'ozon' => false       // ОЗОН Логистика - недоступна
+];
+
+
 ?>

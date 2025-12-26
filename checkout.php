@@ -4,6 +4,11 @@
 require_once 'includes/database.php';
 require_once 'products.php'; // Подключаем напрямую
 
+
+
+($delivery_available['courier'] === false)? $courier_delivery = 'disabled':$courier_delivery = '';
+($delivery_available['ozon'] === false)? $ozon_logistika_delivery = 'disabled':$ozon_logistika_delivery = '';
+
 // Проверяем, переданы ли данные о товарах
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['cart_items'])) {
     $cartItems = json_decode($_POST['cart_items'], true);
@@ -199,43 +204,69 @@ $_SESSION['order_data'] = [
                     </div>
                 </div>
                 
-                <!-- Секция доставки -->
-                <div class="delivery-section">
-                    <h2><i class="fas fa-truck"></i> Способ доставки</h2>
-                    <div class="delivery-options-grid">
-                        <label class="delivery-option selected">
-                            <input type="radio" name="delivery_method" value="pickup" checked>
-                            <div class="delivery-icon">
-                                <i class="fas fa-store-alt"></i>
-                            </div>
-                            <h3>Самовывоз</h3>
-                            <p>Заберите заказ с нашего склада г.Москва, п.Московский, д.Саларьево, вл.3, стр.1</p>
-                            <div class="delivery-price">Бесплатно</div>
-                            <div class="delivery-time">Сегодня</div>
-                        </label>
-                        
-                        <label class="delivery-option">
-                            <input type="radio" name="delivery_method" value="courier">
-                            <div class="delivery-icon">
-                                <i class="fas fa-truck-loading"></i>
-                            </div>
-                            <h3>Курьерская доставка</h3>
-                            <p>Доставка по Москве и области</p>
-                            <div class="delivery-price">500 ₽</div>
-                            <div class="delivery-time">1-2 дня</div>
-                        </label>
-                        
-                        <label class="delivery-option">
-                            <input type="radio" name="delivery_method" value="ozon">
-                            <div class="delivery-icon">
-                                <i class="fas fa-shipping-fast"></i>
-                            </div>
-                            <h3>ОЗОН Логистика</h3>
-                            <p>Доставка ОЗОН Логистикой в ПВЗ вашего города</p>
-                            <div class="delivery-price">от 400 ₽</div>
-                            <div class="delivery-time">3-7 дней</div>
-                        </label>
-                    </div>
+<!-- Секция доставки -->
+<div class="delivery-section">
+    <h2><i class="fas fa-truck"></i> Способ доставки</h2>
+    <div class="delivery-options-grid">
+        <?php if ($delivery_available['pickup']): ?>
+        <label class="delivery-option selected">
+            <input type="radio" name="delivery_method" value="pickup" checked>
+            <div class="delivery-icon">
+                <i class="fas fa-store-alt"></i>
+            </div>
+            <h3>Самовывоз</h3>
+            <p>Заберите заказ с нашего склада г.Москва, п.Московский, д.Саларьево, вл.3, стр.1</p>
+            <div class="delivery-price">Бесплатно</div>
+            <div class="delivery-time">Сегодня</div>
+        </label>
+        <?php endif; ?>
+        
+
+    <!-- курьерская доставка   -->     
+        <label class="delivery-option <?php echo $courier_delivery?>">
+            <input type="radio" name="delivery_method" value="courier">
+            <div class="delivery-icon">
+                <i class="fas fa-truck-loading"></i>
+            </div>
+            <h3>Курьерская доставка</h3>
+            <p>Доставка по Москве и области</p>
+            <div class="delivery-price">500 ₽</div>
+            <?php if ($delivery_available['courier']): ?>
+            <div class="delivery-time">1-2 дня</div>
+            <?php else: ?>
+           
+            <div class="delivery-time">Недоступно</div>   
+             <div class="disabled-label" style="position: absolute; top: 10px; right: 10px; background: #f44336; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">
+                Недоступно
+            </div>
+            <?php endif; ?> 
+        </label>
+
+    <!-- озон логистка    -->    
+
+        <label class="delivery-option <?php echo $ozon_logistika_delivery?>">
+            <input type="radio" name="delivery_method" value="ozon">
+            <div class="delivery-icon">
+                <i class="fas fa-shipping-fast"></i>
+            </div>
+            <h3>ОЗОН Логистика</h3>
+            <p>Доставка ОЗОН Логистикой в ПВЗ вашего города</p>
+            <div class="delivery-price">500 ₽</div>
+            <?php if ($delivery_available['ozon']): ?>
+            <div class="delivery-time">3-7 дней</div>
+            <?php else: ?>
+           
+            <div class="delivery-time">Недоступно</div>   
+             <div class="disabled-label" style="position: absolute; top: 10px; right: 10px; background: #f44336; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">
+                Недоступно
+            </div>
+            <?php endif; ?> 
+        </label>
+
+
+    </div>
+    
+
                     
                     <!-- Поле для адреса доставки (появляется при выборе не самовывоза) -->
                     <div id="addressSection" class="form-group" style="display: none; margin-top: 25px;">

@@ -13,7 +13,7 @@ $dateTime = new DateTime();
 $dateTime->modify('+15 minutes');
 $expiresAt = $dateTime->format('Y-m-d\TH:i:s\Z'); // Дата время окончания оплаты
 $extId = $orderData['order_number']; // Уникальный номер оплаты
-$amount = ['currencyCode' => '643', 'value' => $orderData['total_amount']];
+$amount = ['currencyCode' => '643', 'value' => $orderData['total_amount']*100];
 $fingerprint = sprintf("%s%s%s%s%s%s%s%s", $accessKey, $expiresAt, $extId, $fiscalizationType, $paymentAlgorithm, $amount['currencyCode'], $amount['value'], $secretKey);
 $requestSign = hash('sha256', $fingerprint);
 
@@ -26,7 +26,7 @@ foreach ($orderData['cart_items'] as $cart_items) {
 $array_items[] = array ( 
         "extId"=>    $cart_items['article'] ,
         "name"=>     $cart_items['name'],
-        "price"=>    ['currencyCode' => '643', 'value' => $cart_items['price']], 
+        "price"=>    ['currencyCode' => '643', 'value' => $cart_items['price']*100], 
         "quantity"=> $cart_items['quantity'],
         "type"=>     "TYPE_PRODUCT",
         "unitType"=> "UNIT_PIECE",
@@ -59,19 +59,21 @@ $send_json = json_encode($send_data);
 
 
 $result_query_finance_ozon = post_with_data_ozon_finance($send_json, $ozon_link) ;
+// вносим ссылку на оплату в заказ 
+$stmt = $pdo->prepare("UPDATE orders SET link_ozon_finance = :link_ozon_finance WHERE order_number = :extId");
+$stmt->execute([
+    'link_ozon_finance' => $result_query_finance_ozon['order']['payLink'],
+    'extId' => $extId
+]);
+
+
 if (isset($result_query_finance_ozon['order']['payLink'])) {
     $payLink = $result_query_finance_ozon['order']['payLink'];
      header('Location: '.$payLink);
 }
 
 
-print_r($result_query_finance_ozon);
-
-
-
-
-
-
+// print_r($result_query_finance_ozon);
 
 die();
 /* **************************************************************************************************************
@@ -82,7 +84,7 @@ function post_with_data_ozon_finance($send_data, $ozon_link) {
 
 	$ch = curl_init($ozon_link);
 	curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-		// 'Api-Key:' . '22e9094e-f69b-49d5-9365-a674c2dffc3b',
+		// 'Api-Key:' . '',
 		// 'Client-Id:' . $client_id_ozon, 
 		'Content-Type:application/json'
 	));

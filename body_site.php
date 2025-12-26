@@ -1,4 +1,3 @@
-
 <?php 
 // body_site.php
 
@@ -8,7 +7,6 @@
 ?>
 
 
-    <div class="container">
         <!-- Заголовок -->
         <div class="section-header" style="margin-top: 60px;">
             <h2><i class="fas fa-th-large"></i> Каталог бордюров</h2>
@@ -49,8 +47,8 @@
                         </div>
                     <?php endif; ?>
                     
+                    <!-- Изображение товара -->
                     <div class="product-image">
-                        <!-- Основное изображение товара -->
                         <?php if (!empty($product['images']) && is_array($product['images'])): ?>
                             <img src="<?php echo getProductImage($product['images'][0] ?? '', $defaultImage, $imagePath); ?>" 
                                  alt="<?php echo htmlspecialchars($product['name']); ?>" 
@@ -64,7 +62,7 @@
                                  data-product-id="<?php echo $product['id']; ?>">
                         <?php endif; ?>
                         
-                        <!-- Навигация по изображениям (кружочки) -->
+                        <!-- Навигация по изображениям -->
                         <?php if (!empty($product['images']) && is_array($product['images']) && count($product['images']) > 1): ?>
                             <div class="image-navigation" data-product-id="<?php echo $product['id']; ?>">
                                 <?php foreach ($product['images'] as $index => $image): ?>
@@ -79,13 +77,9 @@
                     </div>
                     
                     <div class="product-info">
-                     <div class="product-category"><?php echo $product['category']; ?></div>
-
-                        <div class="product-title"><?php echo htmlspecialchars($product['name']); ?></div>
-                        <p class="product-description"><?php echo htmlspecialchars($product['description']); ?></p>
-                        
-                                       
-                        <div class="product-meta">
+                        <!-- Цена и остаток товара (сразу под изображением) -->
+                        <div class="product-meta-top">
+                            <div class="product-price"><?php echo number_format($product['price'], 0, '', ' '); ?> ₽</div>
                             <div class="product-stock">
                                 <i class="fas fa-<?php echo $product['inStock'] > 0 ? 'check-circle' : 'times-circle'; ?>"></i>
                                 <span class="stock-<?php 
@@ -97,18 +91,26 @@
                                     if ($product['inStock'] === 0) {
                                         echo 'Нет в наличии';
                                     } elseif ($product['inStock'] <= 3) {
-                                        echo "Осталось всего {$product['inStock']} шт.";
+                                        echo "Осталось {$product['inStock']} шт.";
                                     } else {
                                         echo "В наличии: {$product['inStock']} шт.";
                                     }
                                     ?>
                                 </span>
                             </div>
-                              <div class="product-price"><?php echo number_format($product['price'], 0, '', ' '); ?> ₽</div>
                         </div>
                         
-                        <!-- <div class="product-price"><?php echo number_format($product['price'], 0, '', ' '); ?> ₽</div> -->
-                                   
+                        <!-- Название товара -->
+                        <div class="product-title-wrapper">
+                            <a href="product_detail.php?id=<?php echo $product['id']; ?>" class="product-title-link">
+                                <div class="product-title"><?php echo htmlspecialchars($product['name']); ?></div>
+                            </a>
+             
+                        </div>
+                        
+             
+                        
+                        <!-- Кнопка "Добавить в корзину" (в самом низу) -->
                         <button class="add-to-cart" 
                                 onclick="addToCart(<?php echo $product['id']; ?>, event)" 
                                 <?php echo $product['inStock'] === 0 ? 'disabled' : ''; ?>>
@@ -119,25 +121,6 @@
                 </div>
             <?php endforeach; ?>
         </div>
-    </div>
 
     <!-- Подключение JS -->
-<script> 
-        const productsData = <?php echo json_encode($products); ?>;
-        const imagePath = "<?php echo $imagePath; ?>";
-        const defaultImage = "<?php echo $imagePath . $defaultImage; ?>";
-        
-        // Инициализация глобального состояния корзины
-        let AppState = {
-            products: productsData,
-            cart: JSON.parse(localStorage.getItem('cart')) || [],
-            cartCount: 0,
-            cartTotal: 0
-        };
-
-</script>
-
   <script src="js/catalog.js"></script>
-
-
-    

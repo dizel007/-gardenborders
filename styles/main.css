@@ -37,15 +37,17 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .container {
-    max-width: 1200px;
+    /* max-width: 1200px; */
+    max-width: 95%;
+
     margin: 0 auto;
     padding: 0 20px;
 }
 
 /* Обновляем отступы для секций */
 section {
-    margin: 20px 0;
-    padding: 30px 0;
+    margin: 10px 0;
+    padding: 10px 0;
 }
 
 .section-header {

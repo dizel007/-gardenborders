@@ -1,22 +1,8 @@
 // main.js (обновленная часть)
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Сайт магазина загружен');
-    
     // Инициализация глобального состояния через cartState
     initAppState();
-    
-    // // Плавная прокрутка к секциям
-    // initSmoothScroll();
-    
-    // Обновление года в футере
-    // updateFooterYear();
-    
-    // Инициализация форм
-    // initForms();
-    
-    // Инициализация отслеживания прокрутки для активного меню
-    // initScrollTracking();
-    
+   
     // Подписываемся на изменения корзины
     if (window.cartState) {
         window.cartState.subscribe((cart) => {
@@ -48,8 +34,6 @@ function updateCartCounter() {
     }
 }
 
-// Удаляем старые функции работы с корзиной из main.js
-// И оставляем только эти вспомогательные функции:
 
 // Открытие/закрытие модальных окон
 function openConsultation() {
@@ -60,9 +44,6 @@ function closeConsultation() {
     document.getElementById('consultationModal').style.display = 'none';
 }
 
-// function openPartnership() {
-//     showNotification('Спасибо за интерес к партнерской программе! Наш менеджер свяжется с вами в течение 2 часов.', 'success');
-// }
 
 // Эффект пульсации для значка корзины
 function pulseCartIcon() {
@@ -79,5 +60,5 @@ function pulseCartIcon() {
 window.showNotification = showNotification;
 window.openConsultation = openConsultation;
 window.closeConsultation = closeConsultation;
-window.openPartnership = openPartnership;
+// window.openPartnership = openPartnership;
 window.pulseCartIcon = pulseCartIcon;
