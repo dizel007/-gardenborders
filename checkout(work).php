@@ -2,61 +2,16 @@
  session_start();
 // Подключаем базу данных товаров
 require_once 'includes/database.php';
-$do_not_start_js_code_in_product_php = true; // костыль чтобы убрать заголовки в продуктс.пхп
 require_once 'products.php'; // Подключаем напрямую
 
 
-//************************************************************************************************************
-//   ТУТ сохраним телефон в БД что он подтверженный 
-//************************************************************************************************************
-if (isset($_COOKIE['login_phone'])) {
-$login_phone = $_COOKIE['login_phone'];
-} elseif (isset($_SESSION['login_phone'])) {
-$login_phone = $_SESSION['login_phone'];
-} else {
 
-}
+($delivery_available['courier'] === false)? $courier_delivery = 'disabled':$courier_delivery = '';
+($delivery_available['ozon'] === false)? $ozon_logistika_delivery = 'disabled':$ozon_logistika_delivery = '';
 
-
-// Проубем достать пользователя с таким телефоном
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE phone = $login_phone");
-    $stmt->execute([]);
-    $user_data_from_db_users = $stmt->fetch(PDO::FETCH_ASSOC);
-
-// Создаем куки токена и номера телефона и занесем их в БД
-    $trust_token = bin2hex(random_bytes(32));
-    setcookie('trusted_device', $trust_token, time() + (60 * 60 * 24 * 30), '/', '', true, true);
-    setcookie('login_phone', $login_phone, time() + (60 * 60 * 24 * 30), '/', '', true, true);
-   // Сохраняем хеш токена в БД
-    $token_hash = password_hash($trust_token, PASSWORD_DEFAULT);
-    $token_expires = date('Y-m-d H:i:s', time() + (60 * 60 * 24 * 30 * 6));
-
-
-if (!$user_data_from_db_users) {
-// нет такого телефона в БД то дабавим его (он прошел двух факторную аутентификаю)
-    $stmt = $pdo->prepare("INSERT INTO `users` SET phone = :login_phone, trusted_token = :trusted_token, token_expires =:token_expires");
-    $stmt->execute(array('login_phone' => $login_phone,
-                         'trusted_token' => $token_hash,
-                         'token_expires' => $token_expires ));
-    } else {
-// если есть такой нормер, то обновляем токен и его срок жизни
-    $stmt= $pdo->prepare("UPDATE `users` SET trusted_token = :trusted_token, token_expires =:token_expires WHERE phone = :login_phone");
-    $stmt->execute(array('login_phone' => $login_phone,
-                         'trusted_token' => $token_hash,
-                         'token_expires' => $token_expires ));
-    $user_data_from_db_users['full_name'] !=''? $user_full_name = $user_data_from_db_users['full_name']:$user_full_name ='';
-    $user_data_from_db_users['email'] !=''? $user_email = $user_data_from_db_users['email']:$user_email ='';
-    }
-
-    $insert_id = $pdo->lastInsertId();
-
-// Доставки включаем или выключает
-($delivery_available['courier'] === false)? $courier_delivery = 'disabled'     : $courier_delivery = '';
-($delivery_available['ozon'] === false)? $ozon_logistika_delivery = 'disabled' : $ozon_logistika_delivery = '';
-
-
-if (!empty($_SESSION['order_data']['cart_items'])) {
-    $cartItems = $_SESSION['order_data']['cart_items'];
+// Проверяем, переданы ли данные о товарах
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['cart_items'])) {
+    $cartItems = json_decode($_POST['cart_items'], true);
     
     // Проверяем наличие всех товаров НАПРЯМУЮ из массива $products
     $allAvailable = true;
@@ -91,6 +46,7 @@ if (!empty($_SESSION['order_data']['cart_items'])) {
             ];
         }
     }
+    
     // Если какие-то товары недоступны - показываем ошибку
     if (!$allAvailable) {
         $errorMessage = "Некоторые товары недоступны в запрошенном количестве:\n";
@@ -110,7 +66,6 @@ if (!empty($_SESSION['order_data']['cart_items'])) {
     }
 } else {
     // Если данные не переданы, перенаправляем на главную
-    // die('данные не переданы, перенаправляем на главную');
     header('Location: index.php');
     exit;
 }
@@ -128,12 +83,16 @@ $_SESSION['order_data'] = [
     'created_at' => date('Y-m-d H:i:s')
 ];
 ?>
+
+<!-- шапка -->
 <?php require_once "header.php";?>
+
 <link rel="stylesheet" href="styles/checkout.css">
-   <!-- Основной контент -->
+
+    <!-- Основной контент -->
     <main class="checkout-container">
         <div class="checkout-header">
-            <h1><i class="fas fa-shopping-cart"></i> Оформление заказа </h1>
+            <h1><i class="fas fa-shopping-cart"></i> Оформление заказа</h1>
             <p>Завершите оформление заказа, заполнив информацию ниже</p>
         </div>
         
@@ -225,35 +184,26 @@ $_SESSION['order_data'] = [
                         </div>
                     </div>
                 </div>
-    
                 
-
-
-
-
-
-<!-- Секция контактной информации -->
+                <!-- Секция контактной информации -->
                 <div class="form-section">
                     <h2><i class="fas fa-user"></i> Контактная информация</h2>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="full_name">ФИО *</label>
-                            <input type="text" id="full_name" name="full_name" required value="<?php echo $user_full_name?>">
+                            <input type="text" id="full_name" name="full_name" required>
                         </div>
                         <div class="form-group">
                             <label for="phone">Телефон *</label>
-                            <input type="tel" id="phone" name="phone" readonly required value="<?php echo $login_phone; ?>">
+                            <input type="tel" id="phone" name="phone" required placeholder="79161234567">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="email">Email *</label>
-                        <input type="email" id="email" name="email" required value ="<?php echo $user_email?>" placeholder="example@mail.ru">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="example@mail.ru">
                     </div>
                 </div>
-        
-      
-
-
+                
 <!-- Секция доставки -->
 <div class="delivery-section">
     <h2><i class="fas fa-truck"></i> Способ доставки</h2>

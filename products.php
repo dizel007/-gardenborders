@@ -11,14 +11,6 @@ $defaultImage = "default.jpg";
 
 
 
-      try {  
-        $pdo = new PDO('mysql:host='.$host.';dbname='.$db.';charset=utf8', $user, $password);
-        $pdo->exec('SET NAMES utf8');
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        } catch (PDOException $e) {
-          print "Has errors: " . $e->getMessage();  die();
-        }
 
 
    
@@ -60,8 +52,7 @@ foreach ($products as &$one_product) {
    }
 
  ?>
- <!-- Передаем в JS товары и основные характеристики -->
- <?php if(!isset($do_not_start_js_code_in_product_php)):?>
+<?php if(!isset($do_not_start_js_code_in_product_php)):?>
 <script> 
         const productsData = <?php echo json_encode($products); ?>;
         const imagePath = "<?php echo $imagePath; ?>";
@@ -77,7 +68,6 @@ foreach ($products as &$one_product) {
 
 </script>
 <?php endif; ?>
-
 <?php
 
 //    echo "<pre>";

@@ -1,16 +1,13 @@
 <?php
-// require_once 'config.php';
+session_start();
+require_once 'config.php';
 // блокируем вывод JS кода в product.php
 $do_not_start_js_code_in_product_php = 1;
 // Подключаем товары напрямую
 require_once 'products.php';
 require_once 'includes/database.php';
-session_start();
-
-
 
 /// Доставем послений номер заказа 
-
 try {
     $stmt = $pdo->prepare("SELECT * FROM orders ORDER BY id DESC LIMIT 1;");
     $stmt->execute([]);
@@ -20,19 +17,28 @@ try {
     echo "Ошибка: " . $e->getMessage();
 }
 
-
-
-
 // Проверяем, есть ли данные в сессии
 if (!isset($_SESSION['order_data'])) {
         header('Location: index.php');
     exit;
 }
+//****************************************************************************************************************
+// Сохраним данные о пользователие
+//****************************************************************************************************************
+        $full_name_for_db = htmlspecialchars($_POST['full_name']);
+        $email_for_db     = htmlspecialchars($_POST['email']);
+        $login_phone      = $_COOKIE['login_phone'];
+
+$stmt = $pdo->prepare("UPDATE `users` SET full_name= :full_name, email= :email WHERE phone =:phone");
+$stmt->execute(array("phone" => $login_phone,
+                     "full_name" => $full_name_for_db,
+                     "email" => $email_for_db));
+
+
+
 
 // Проверяем наличие товаров еще раз перед оформлением
 $cartItems = $_SESSION['order_data']['cart_items'];
-
-
 $allAvailable = true;
 $unavailableItems = [];
 
@@ -182,6 +188,3 @@ if ($_POST['payment_method'] != 'cash') {
 }
 exit();
 ?>
-
-
-

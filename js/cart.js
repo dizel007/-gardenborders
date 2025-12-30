@@ -433,7 +433,9 @@ function checkout() {
         // Создаем форму для отправки данных на сервер
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = 'checkout.php';
+        // form.action = 'checkout.php';
+        form.action = 'sms_auth/index.php';
+
         form.style.display = 'none';
         
         // Добавляем данные корзины
