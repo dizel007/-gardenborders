@@ -7,3 +7,5 @@ vendor
 pages/dealer_applications
 
 sms_auth/config.php
+
+config.php
