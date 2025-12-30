@@ -13,40 +13,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['cart_items'])) {
  $stop_token_expires = date('Y-m-d H:i:s');
 
 if (isset($_COOKIE['trusted_device']) && (isset($_COOKIE['login_phone'])))  {
+// доставаем информацию по этому пользователю
     $login_phone = $_COOKIE['login_phone'];
     $stmt = $pdo->prepare("SELECT * FROM users WHERE phone = $login_phone");
     $stmt-> execute([]);
     $data_select_user = $stmt->fetch(PDO::FETCH_ASSOC);
-// echo "<pre>";
-//  print_r($data_select_user);
-
-// Проверяем совпадение токена и срок годности токена
-$token_from_cookie = $_COOKIE['trusted_device'];
-$hash_from_database = $data_select_user['trusted_token'];
-
-$good_token_test = true; // показывает годен ли токен для работы 
-// Сравниваем (password_verify сама разберется с солью)
-       if (!password_verify($token_from_cookie, $hash_from_database)) {
+// если вдруг не добыли контакт, то выходим назад на кглавную
+    if (!isset($data_select_user['phone'])) {
             $good_token_test = false;
             unset($_COOKIE['trusted_device']); // удаляем из глобального массива
             unset($_COOKIE['login_phone']); // удаляем из глобального массива
-         }
 
-// ****************  Проверяем время жизни токена **********************************
-       if (strtotime($data_select_user['token_expires']) < time()) {
-            $good_token_test = false;
-            unset($_COOKIE['trusted_device']); // удаляем из глобального массива
-            unset($_COOKIE['login_phone']); // удаляем из глобального массива
+    } else {
+
+
+        // Проверяем совпадение токена и срок годности токена
+        $token_from_cookie = $_COOKIE['trusted_device'];
+        $hash_from_database = $data_select_user['trusted_token'];
+
+        $good_token_test = true; // показывает годен ли токен для работы 
+        // Сравниваем (password_verify сама разберется с солью)
+            if (!password_verify($token_from_cookie, $hash_from_database)) {
+                    $good_token_test = false;
+                    unset($_COOKIE['trusted_device']); // удаляем из глобального массива
+                    unset($_COOKIE['login_phone']); // удаляем из глобального массива
+                }
+
+        // ****************  Проверяем время жизни токена **********************************
+            if (strtotime($data_select_user['token_expires']) < time()) {
+                    $good_token_test = false;
+                    unset($_COOKIE['trusted_device']); // удаляем из глобального массива
+                    unset($_COOKIE['login_phone']); // удаляем из глобального массива
+                }
+
+        // Если токен не прошел признаки достоверности то уходим на подтверждение телефона
+        if ($good_token_test) {
+                header('Location: ../checkout.php');
         }
-
-// Если токен не прошел признаки достоверности то уходим на подтверждение телефона
-if ($good_token_test) {
-        header('Location: ../checkout.php');
+    }
 }
-
-
-// Ghjdth
-}
+gotoEnterForm:
 ?>
 <!DOCTYPE html>
 <html lang="ru">

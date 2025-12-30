@@ -92,13 +92,15 @@ $stmt->execute(['extId' => $orderData_t[0]['order_number']]);
 /********************************************************************************************************
  *  Отправляем письмо о заказе
  *******************************************************************************************************/
- $content = "=== ПРИШЕЛ ЗАКАЗ ===<br>";
- $content .= 'Номер заказа: '.$orderData['order_number']."<br>";
- $content .= 'Дата заказа: '.$orderData['order_date']."<br>";
- $content .= 'метод платежа : '.($orderData['payment']['method'])."<br>";
- $content .= 'метод Доставки : '.($orderData['delivery']['method'])."<br>";
-$content .=       
-     
+//
+foreach ($orderData['cart_items'] as &$items_p) {
+$items_p['total'] = $items_p['price'] * $items_p['quantity'];
+}
+// формируем content для письма
+require_once "mailer/shablon_order_email.php";
+
+   
+
 send_many_emails($EMAIL_for_letters, 'ПРИШЕЛ ЗАКАЗ',  $content, $mail_for_send_letter, $mail_pass);
 
 

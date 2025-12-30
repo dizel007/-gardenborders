@@ -38,6 +38,9 @@ if (!$user_data_from_db_users) {
     $stmt->execute(array('login_phone' => $login_phone,
                          'trusted_token' => $token_hash,
                          'token_expires' => $token_expires ));
+
+    $user_full_name ='';
+    $user_email ='';
     } else {
 // если есть такой нормер, то обновляем токен и его срок жизни
     $stmt= $pdo->prepare("UPDATE `users` SET trusted_token = :trusted_token, token_expires =:token_expires WHERE phone = :login_phone");
